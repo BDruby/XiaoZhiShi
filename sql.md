@@ -1,0 +1,7 @@
+HOST = 35.212.212.79:5432
+NAME = xiaozhishi
+USERNAME =xiaozhishi
+PASSWORD = N5Kd@AkZD5s_bC4pCd
+
+
+DEEPSEEK_APIKEY = sk-0e4f5adeb61147079b80f5dac7383429

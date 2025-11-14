@@ -1,0 +1,291 @@
+{% extends "admin/base.html" %}
+
+{% block title %}编辑文章 - 管理后台{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="md:flex md:items-center md:justify-between mb-6">
+        <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                编辑文章 - {{ post.title }}
+            </h2>
+        </div>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-6">
+        <form method="POST">
+            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <div class="sm:col-span-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">标题</label>
+                    <input type="text" name="title" value="{{ post.title }}" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div class="sm:col-span-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">URL别名</label>
+                    <input type="text" name="slug" value="{{ post.slug }}" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div class="sm:col-span-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">分类</label>
+                    <select name="category_id" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">请选择分类</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {{ 'selected' if post.category_id == category.id }}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="sm:col-span-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                    <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="draft" {{ 'selected' if post.status == 'draft' }}>草稿</option>
+                        <option value="published" {{ 'selected' if post.status == 'published' }}>已发布</option>
+                        <option value="archived" {{ 'selected' if post.status == 'archived' }}>已归档</option>
+                    </select>
+                </div>
+                
+                <div class="sm:col-span-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">摘要</label>
+                    <textarea name="excerpt" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">{{ post.excerpt }}</textarea>
+                </div>
+                
+                <div class="sm:col-span-6">
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-sm font-medium text-gray-700">内容</label>
+                        <button type="button" id="openMediaLibrary" class="text-sm text-indigo-600 hover:text-indigo-800">
+                            媒体库
+                        </button>
+                    </div>
+                    <div id="editor" style="border: 1px solid #d1d5db; border-top: none; min-height: 300px; height: 300px; border-radius: 0 0 0.375rem 0.375rem;">
+                        <!-- 编辑器内容将在此处渲染 -->
+                    </div>
+                    <input type="hidden" id="content" name="content" required value="{{ post.content }}">
+                </div>
+            </div>
+            
+            <div class="mt-8 flex justify-end">
+                <a href="{{ url_for('admin.posts') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    取消
+                </a>
+                <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    更新文章
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<link href="https://unpkg.com/@wangeditor/editor@5.1.23/dist/css/style.css" rel="stylesheet">
+<style>
+    #toolbar-container {
+        z-index: 10;
+    }
+    #editor {
+        z-index: 0;
+    }
+    .w-e-toolbar {
+        border-radius: 0.375rem 0.375rem 0 0 !important;
+        border-bottom: 1px solid #d1d5db !important;
+    }
+    .w-e-text-container {
+        border-radius: 0 0 0.375rem 0.375rem !important;
+        border-top: none !important;
+    }
+</style>
+<script src="https://unpkg.com/@wangeditor/editor@5.1.23/dist/index.js"></script>
+<script>
+    let editor;
+    let toolbarCreated = false; // 标记工具栏是否已创建
+    
+    // 确保DOM加载完成后初始化编辑器
+    document.addEventListener('DOMContentLoaded', function() {
+        // 检查wangEditor是否已加载
+        if (typeof window.wangEditor === 'undefined') {
+            console.error('wangEditor 未正确加载');
+            return;
+        }
+        
+        // 检查是否已有工具栏容器，避免重复创建
+        let toolbarContainer = document.getElementById('toolbar-container');
+        if (!toolbarContainer) {
+            // 创建一个工具栏容器元素
+            toolbarContainer = document.createElement('div');
+            toolbarContainer.id = 'toolbar-container';
+            toolbarContainer.style.border = '1px solid #d1d5db';
+            toolbarContainer.style.borderBottom = 'none';
+            toolbarContainer.style.borderRadius = '0.375rem 0.375rem 0 0';
+            toolbarContainer.style.marginBottom = '0';
+            toolbarContainer.style.backgroundColor = '#f9fafb';
+            const elem = document.getElementById('editor');
+            elem.parentNode.insertBefore(toolbarContainer, elem);
+        }
+        
+        // 初始化富文本编辑器
+        const E = window.wangEditor;
+        const editorConfig = {
+            placeholder: '请输入文章内容...',
+            MENU_CONF: {},
+            onCreated: (editorInstance) => {
+                editor = editorInstance;
+                // 在编辑器创建后设置内容
+                const contentValue = document.getElementById('content').value;
+                if (contentValue) {
+                    editor.setHtml(contentValue);
+                }
+            }
+        };
+        
+        // 配置图片上传
+        editorConfig.MENU_CONF['uploadImage'] = {
+            server: '/media/upload', // 图片上传接口，需要后端支持
+            fieldName: 'file', // formData 中的参数名，与后端一致
+            maxFileSize: 2 * 1024 * 1024, // 2M
+            maxNumberOfFiles: 10, // 最大上传数量
+            allowedFileTypes: ['image/*'],
+            // 自定义插入图片
+            customInsert(res, insertFn) {
+                // res 即服务端的返回结果
+                console.log('上传响应:', res); // 调试日志
+                // 根据后端实际返回格式调整
+                if(res.success && res.file_path) {
+                    insertFn(res.file_path, res.original_filename || '', ''); // 插入图片
+                } else if(res.url) {
+                    insertFn(res.url, res.alt || '', ''); // 兼容其他格式
+                } else {
+                    alert('上传失败或返回格式不正确');
+                }
+            }
+        };
+        
+        // 确保wangEditor已正确加载且工具栏未创建
+        if (typeof E !== 'undefined' && E.createEditor && E.createToolbar && !toolbarCreated) {
+            const elem = document.getElementById('editor');
+            
+            // 创建编辑器
+            const wangEditor = E.createEditor({
+                selector: elem,
+                config: editorConfig,
+                mode: 'default'
+            });
+            
+            // 创建工具栏
+            const toolbar = E.createToolbar({
+                editor: wangEditor,
+                selector: '#toolbar-container',
+                mode: 'default'
+            });
+            
+            toolbarCreated = true; // 标记工具栏已创建
+        } else {
+            console.error('wangEditor 未正确加载或工具栏已存在');
+        }
+        
+        // 表单提交前获取编辑器内容
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            console.log('表单提交事件触发');
+            // 检查编辑器是否已初始化
+            if (editor) {
+                // 将编辑器内容更新到隐藏字段
+                const contentValue = editor.getHtml();
+                document.getElementById('content').value = contentValue;
+                console.log('编辑器内容已设置:', contentValue);
+            } else {
+                console.error('编辑器未初始化');
+                // 如果编辑器未初始化，使用编辑器容器的内容作为备选
+                const contentValue = document.getElementById('content').value;
+                document.getElementById('content').value = contentValue;
+                console.log('使用备选内容:', contentValue);
+            }
+            // 确保表单可以正常提交
+            console.log('表单即将提交');
+        });
+        
+        // 打开媒体库
+        document.getElementById('openMediaLibrary').addEventListener('click', function() {
+            window.open('/media/', 'mediaLibrary', 'width=800,height=600');
+        });
+
+        // 监听从媒体库插入图片的事件（通过窗口通信）
+        window.addEventListener('message', function(event) {
+            console.log('接收到消息:', event.data);
+            if (event.data && event.data.type === 'insertImage') {
+                if (editor) {
+                    const imageData = event.data.image;
+                    console.log('准备插入图片:', imageData);
+                    
+                    // 插入图片到编辑器
+                    try {
+                        if (!imageData.url) {
+                            console.error('图片URL为空');
+                            alert('图片URL为空，无法插入');
+                            return;
+                        }
+                        
+                        // 尝试多种API方法
+                        let inserted = false;
+                        
+                        // 方法1: 使用dangerouslyInsertHtml (wangEditor v5 API)
+                        if (editor.dangerouslyInsertHtml && typeof editor.dangerouslyInsertHtml === 'function') {
+                            const imgHtml = `<img src="${imageData.url}" alt="${imageData.alt || '图片'}" style="max-width:100%; display: block; margin: 10px 0;"/>`;
+                            editor.dangerouslyInsertHtml(imgHtml);
+                            inserted = true;
+                        }
+                        // 方法2: 尝试直接插入图片节点
+                        else if (editor.insertElem && typeof editor.insertElem === 'function') {
+                            editor.insertElem({
+                                type: 'image',
+                                src: imageData.url,
+                                alt: imageData.alt || '图片',
+                                style: { maxWidth: '100%', display: 'block', margin: '10px 0' }
+                            });
+                            inserted = true;
+                        }
+                        // 方法3: 尝试通过编辑器命令
+                        else if (editor.getSelectionContainerElem && typeof editor.getSelectionContainerElem === 'function') {
+                            const imgElement = document.createElement('img');
+                            imgElement.src = imageData.url;
+                            imgElement.alt = imageData.alt || '图片';
+                            imgElement.style.cssText = 'max-width:100%; display: block; margin: 10px 0;';
+                            
+                            // 直接操作编辑器内容
+                            const container = editor.getSelectionContainerElem();
+                            if (container) {
+                                container.append(imgElement);
+                            } else {
+                                // 如果无法获取当前光标位置，直接添加到编辑器末尾
+                                const editorBody = editor.getElemsByType('paragraph').pop() || editor.children[editor.children.length - 1];
+                                if (editorBody && editorBody.append) {
+                                    editorBody.append(imgElement);
+                                } else {
+                                    // 最后尝试直接操作DOM
+                                    const editorDom = document.querySelector('.w-e-text-container .w-e-text');
+                                    if (editorDom) {
+                                        editorDom.appendChild(imgElement);
+                                    }
+                                }
+                            }
+                            inserted = true;
+                        }
+                        
+                        if (!inserted) {
+                            console.error('未找到合适的插入方法');
+                            console.log('Editor object has methods:', typeof editor, editor.constructor?.name);
+                            alert('当前编辑器版本不支持自动插入，请手动复制图片URL到编辑器中');
+                            return;
+                        }
+                        
+                        console.log('图片已成功插入到编辑器:', imageData.url);
+                    } catch (error) {
+                        console.error('插入图片时出错:', error);
+                        alert('插入图片时发生错误，请重试: ' + error.message);
+                    }
+                } else {
+                    console.error('编辑器未初始化，无法插入图片');
+                    alert('编辑器未初始化，无法插入图片，请稍后重试');
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
