@@ -31,11 +31,20 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.login_message = '请先登录以访问此页面。'
     
-    # 必须添加用户加载回调
-    from app.models import User
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+    # 必须添加用户加载回调
+    from app.models import User
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+    
+    # 添加上下文处理器
+    from app.utils.seo import get_seo_settings, register_seo_functions
+    @app.context_processor
+    def inject_seo_settings():
+        return dict(seo_settings=get_seo_settings())
+    
+    # 注册SEO函数
+    register_seo_functions(app)
     
     # 注册蓝图
     from .auth import bp as auth_bp
@@ -50,7 +59,10 @@ def create_app():
     from .admin import bp as admin_bp
     app.register_blueprint(admin_bp)
     
-    from .media import bp as media_bp
-    app.register_blueprint(media_bp)
-    
+    from .media import bp as media_bp
+    app.register_blueprint(media_bp)
+    
+    from .admin.seo import bp as seo_bp
+    app.register_blueprint(seo_bp)
+    
     return app

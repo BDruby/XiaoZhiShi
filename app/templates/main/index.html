@@ -1,62 +1,67 @@
-{% extends "base.html" %}
-
-{% block title %}首页 - 小芝士{% endblock %}
-
-{% block content %}
-<div class="max-w-3xl mx-auto">
-    <div class="text-center mb-10">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">欢迎来到小芝士</h1>
-        <p class="text-xl text-gray-600">分享知识，记录生活</p>
-    </div>
-
-    {% if posts %}
-        <div class="space-y-8" id="post-cards-container">
-            {% for post in posts %}
-                <div class="post-card" data-index="{{ loop.index }}" onclick="window.location.href='{{ url_for('main.post_detail', slug=post.slug) }}'">
-                    {% if post.featured_image %}
-                        <img class="post-card-image" src="{{ post.featured_image }}" alt="{{ post.title }}">
-                    {% endif %}
-                    <div class="post-card-content">
-                        <h2 class="post-card-title" onclick="window.location.href='{{ url_for('main.post_detail', slug=post.slug) }}'; event.stopPropagation();">
-                            {{ post.title }}
-                        </h2>
-                        <div class="post-card-meta" onclick="event.stopPropagation();">
-                            <span>作者: {{ post.author.username }}</span>
-                            <span class="mx-2">•</span>
-                            <span>{{ post.created_at.strftime('%Y-%m-%d') }}</span>
-                            {% if post.category %}
-                                <span class="mx-2">•</span>
-                                <span class="text-indigo-600">{{ post.category.name }}</span>
-                            {% endif %}
-                        </div>
-                        <p class="post-card-excerpt" onclick="event.stopPropagation();">
-                            {% if post.excerpt %}
-                                {{ post.excerpt|striptags|truncate(200, true, '...') }}
-                            {% else %}
-                                {{ post.content|striptags|truncate(200, true, '...') }}
-                            {% endif %}
-                        </p>
-                        <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="post-card-link" onclick="event.stopPropagation();">
-                            阅读全文
-                        </a>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="text-center py-12">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-            </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">暂无文章</h3>
-            <p class="mt-1 text-sm text-gray-500">还没有发布任何文章。</p>
-        </div>
-    {% endif %}
-</div>
-{% endblock %}
-
-{% block scripts %}
-    {{ super() }}
-    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/card-animations.js') }}"></script>
+{% extends "base.html" %}
+{% from 'macros/seo.html' import render_meta_tags %}
+
+{% block meta_tags %}
+{{ generate_meta_tags(
+    title='首页'
+) | safe }}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">欢迎来到小芝士</h1>
+        <p class="text-xl text-gray-600">分享知识，记录生活</p>
+    </div>
+
+    {% if posts %}
+        <div class="space-y-8" id="post-cards-container">
+            {% for post in posts %}
+                <div class="post-card" data-index="{{ loop.index }}" onclick="window.location.href='{{ url_for('main.post_detail', slug=post.slug) }}'">
+                    {% if post.featured_image %}
+                        <img class="post-card-image" src="{{ post.featured_image }}" alt="{{ post.title }}">
+                    {% endif %}
+                    <div class="post-card-content">
+                        <h2 class="post-card-title" onclick="window.location.href='{{ url_for('main.post_detail', slug=post.slug) }}'; event.stopPropagation();">
+                            {{ post.title }}
+                        </h2>
+                        <div class="post-card-meta" onclick="event.stopPropagation();">
+                            <span>作者: {{ post.author.username }}</span>
+                            <span class="mx-2">•</span>
+                            <span>{{ post.created_at.strftime('%Y-%m-%d') }}</span>
+                            {% if post.category %}
+                                <span class="mx-2">•</span>
+                                <span class="text-indigo-600">{{ post.category.name }}</span>
+                            {% endif %}
+                        </div>
+                        <p class="post-card-excerpt" onclick="event.stopPropagation();">
+                            {% if post.excerpt %}
+                                {{ post.excerpt|striptags|truncate(200, true, '...') }}
+                            {% else %}
+                                {{ post.content|striptags|truncate(200, true, '...') }}
+                            {% endif %}
+                        </p>
+                        <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="post-card-link" onclick="event.stopPropagation();">
+                            阅读全文
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">暂无文章</h3>
+            <p class="mt-1 text-sm text-gray-500">还没有发布任何文章。</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/card-animations.js') }}"></script>
 {% endblock %}

@@ -1,10 +1,13 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
-from flask_login import login_required, current_user
-from app.models import db, User, Post, Category, Tag
-from app.auth.forms import RegisterForm
-from sqlalchemy import func
-
-bp = Blueprint('admin', __name__, url_prefix='/admin')
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask_login import login_required, current_user
+from app.models import db, User, Post, Category, Tag
+from app.auth.forms import RegisterForm
+from sqlalchemy import func
+
+bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+# 导入SEO模块（这里导入是为了注册路由，即使没有直接使用变量）
+from app.admin import seo
 
 @bp.before_request
 @login_required
@@ -129,7 +132,12 @@ def create_post():
                 content=content,
                 excerpt=request.form.get('excerpt', ''),
                 status=request.form.get('status', 'draft'),
-                user_id=current_user.id
+                user_id=current_user.id,
+                # SEO字段
+                seo_title=request.form.get('seo_title', ''),
+                seo_description=request.form.get('seo_description', ''),
+                seo_keywords=request.form.get('seo_keywords', ''),
+                seo_og_image=request.form.get('seo_og_image', '')
             )
             
             # 处理分类
@@ -160,6 +168,11 @@ def edit_post(id):
             post.content = request.form['content']
             post.excerpt = request.form.get('excerpt', '')
             post.status = request.form.get('status', post.status)
+            # SEO字段
+            post.seo_title = request.form.get('seo_title', '')
+            post.seo_description = request.form.get('seo_description', '')
+            post.seo_keywords = request.form.get('seo_keywords', '')
+            post.seo_og_image = request.form.get('seo_og_image', '')
             
             # 处理分类
             category_id = request.form.get('category_id')
@@ -192,19 +205,23 @@ def categories():
 
 @bp.route('/categories/create', methods=['GET', 'POST'])
 def create_category():
-    if request.method == 'POST':
-        category = Category(
-            name=request.form['name'],
-            slug=request.form['slug'],
-            description=request.form.get('description', '')
-        )
-        
-        # 处理父级分类
-        parent_id = request.form.get('parent_id')
-        if parent_id:
-            category.parent_id = parent_id
-            
-        db.session.add(category)
+    if request.method == 'POST':
+        category = Category(
+            name=request.form['name'],
+            slug=request.form['slug'],
+            description=request.form.get('description', ''),
+            # SEO字段
+            seo_title=request.form.get('seo_title', ''),
+            seo_description=request.form.get('seo_description', ''),
+            seo_keywords=request.form.get('seo_keywords', '')
+        )
+        
+        # 处理父级分类
+        parent_id = request.form.get('parent_id')
+        if parent_id:
+            category.parent_id = parent_id
+            
+        db.session.add(category)
         db.session.commit()
         flash('分类创建成功', 'success')
         return redirect(url_for('admin.categories'))
@@ -216,15 +233,19 @@ def create_category():
 def edit_category(id):
     category = Category.query.get_or_404(id)
     
-    if request.method == 'POST':
-        category.name = request.form['name']
-        category.slug = request.form['slug']
-        category.description = request.form.get('description', '')
-        
-        # 处理父级分类
-        parent_id = request.form.get('parent_id')
-        category.parent_id = parent_id if parent_id and parent_id != str(category.id) else None
-            
+    if request.method == 'POST':
+        category.name = request.form['name']
+        category.slug = request.form['slug']
+        category.description = request.form.get('description', '')
+        # SEO字段
+        category.seo_title = request.form.get('seo_title', '')
+        category.seo_description = request.form.get('seo_description', '')
+        category.seo_keywords = request.form.get('seo_keywords', '')
+        
+        # 处理父级分类
+        parent_id = request.form.get('parent_id')
+        category.parent_id = parent_id if parent_id and parent_id != str(category.id) else None
+            
         db.session.commit()
         flash('分类更新成功', 'success')
         return redirect(url_for('admin.categories'))

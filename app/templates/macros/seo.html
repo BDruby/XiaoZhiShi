@@ -1,0 +1,63 @@
+{% macro render_meta_tags(title='', description='', keywords='', og_image='', og_type='website', canonical_url='') %}
+    {# 在宏内部访问seo_settings #}
+    {% if seo_settings %}
+        {% set site_title = seo_settings.site_title or '现代化博客系统' %}
+        {% set site_description = seo_settings.site_description or '' %}
+        {% set site_keywords = seo_settings.site_keywords or '' %}
+        {% set site_author = seo_settings.site_author or '' %}
+        {% set og_image_default = seo_settings.og_image or '' %}
+        {% set twitter_handle = seo_settings.twitter_handle or '' %}
+    {% else %}
+        {% set site_title = '现代化博客系统' %}
+        {% set site_description = '' %}
+        {% set site_keywords = '' %}
+        {% set site_author = '' %}
+        {% set og_image_default = '' %}
+        {% set twitter_handle = '' %}
+    {% endif %}
+
+    {% set final_title = (title + ' - ' + site_title) if title and title != '' else site_title %}
+    {% set final_description = description if description and description != '' else site_description %}
+    {% set final_keywords = keywords if keywords and keywords != '' else site_keywords %}
+    {% set final_og_image = og_image if og_image and og_image != '' else og_image_default %}
+
+    <title>{{ final_title }}</title>
+    <meta name="description" content="{{ final_description }}">
+
+    {% if final_keywords %}
+    <meta name="keywords" content="{{ final_keywords }}">
+    {% endif %}
+
+    {% if site_author %}
+    <meta name="author" content="{{ site_author }}">
+    {% endif %}
+
+    <meta property="og:title" content="{{ final_title }}">
+    <meta property="og:description" content="{{ final_description }}">
+    <meta property="og:type" content="{{ og_type }}">
+    <meta property="og:url" content="{{ request.url }}">
+
+    {% if final_og_image %}
+    <meta property="og:image" content="{{ final_og_image }}">
+    {% endif %}
+
+    <meta name="twitter:card" content="summary_large_image">
+    {% if twitter_handle %}
+    <meta name="twitter:site" content="{{ twitter_handle }}">
+    {% endif %}
+    <meta name="twitter:title" content="{{ final_title }}">
+    <meta name="twitter:description" content="{{ final_description }}">
+    {% if final_og_image %}
+    <meta name="twitter:image" content="{{ final_og_image }}">
+    {% endif %}
+
+    {% if canonical_url %}
+    <link rel="canonical" href="{{ canonical_url }}">
+    {% else %}
+    <link rel="canonical" href="{{ request.url }}">
+    {% endif %}
+
+    {% if seo_settings and seo_settings.custom_head_code %}
+    {{ seo_settings.custom_head_code|safe }}
+    {% endif %}
+{% endmacro %}

@@ -52,6 +52,11 @@ class Category(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
+    # SEO字段
+    seo_title = db.Column(db.String(200), nullable=True)
+    seo_description = db.Column(db.Text, nullable=True)
+    seo_keywords = db.Column(db.Text, nullable=True)
+    
     # 自关联关系
     parent = db.relationship('Category', remote_side=[id], backref='subcategories')
     posts = db.relationship('Post', backref='category', lazy=True)
@@ -84,6 +89,12 @@ class Post(db.Model):
     published_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # SEO字段
+    seo_title = db.Column(db.String(200), nullable=True)
+    seo_description = db.Column(db.Text, nullable=True)
+    seo_keywords = db.Column(db.Text, nullable=True)
+    seo_og_image = db.Column(db.String(255), nullable=True)
     
     # 关系
     comments = db.relationship('Comment', backref='post', lazy=True)
@@ -131,4 +142,29 @@ class Setting(db.Model):
     value = db.Column(db.Text)
     type = db.Column(db.String(50), default='string')  # string, integer, boolean, json
     description = db.Column(db.String(500), nullable=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class SeoSetting(db.Model):
+    __tablename__ = 'seo_settings'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    site_title = db.Column(db.String(200), nullable=True)
+    site_description = db.Column(db.Text, nullable=True)
+    site_keywords = db.Column(db.Text, nullable=True)
+    site_author = db.Column(db.String(100), nullable=True)
+    site_logo = db.Column(db.String(255), nullable=True)
+    favicon = db.Column(db.String(255), nullable=True)
+    google_analytics_id = db.Column(db.String(50), nullable=True)
+    baidu_analytics_id = db.Column(db.String(50), nullable=True)
+    social_media_links = db.Column(db.Text, nullable=True)  # JSON格式存储社交媒体链接
+    custom_head_code = db.Column(db.Text, nullable=True)  # 自定义<head>代码
+    robots_txt = db.Column(db.Text, nullable=True)
+    sitemap_url = db.Column(db.String(255), nullable=True)
+    twitter_handle = db.Column(db.String(50), nullable=True)  # Twitter账号
+    og_image = db.Column(db.String(255), nullable=True)  # 默认Open Graph图片
+    default_canonical_url = db.Column(db.String(255), nullable=True)  # 默认规范URL
+    sitemap_lastmod = db.Column(db.DateTime, nullable=True)  # sitemap最后修改时间
+    robots_txt_lastmod = db.Column(db.DateTime, nullable=True)  # robots.txt最后修改时间
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

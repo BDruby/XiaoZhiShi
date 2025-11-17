@@ -1,6 +1,16 @@
 {% extends "base.html" %}
+{% from 'macros/seo.html' import render_meta_tags %}
+{% from 'macros/seo_utils.html' import get_category_seo_data %}
 
-{% block title %}{{ category.name }} - 现代化博客系统{% endblock %}
+{% block meta_tags %}
+    {% set seo_data = get_category_seo_data(category) %}
+    {{ render_meta_tags(
+        title=seo_data.title,
+        description=seo_data.description,
+        keywords=seo_data.keywords,
+        canonical_url=seo_data.canonical_url
+    ) }}
+{% endblock %}
 
 {% block content %}
 <div class="max-w-3xl mx-auto">
