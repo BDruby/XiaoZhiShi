@@ -127,10 +127,17 @@
                     <p class="mt-1 text-sm text-gray-500">Robots.txt最后生成时间</p>
                 </div>
                 
-                <div class="sm:col-span-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">默认规范URL</label>
-                    <input type="text" name="default_canonical_url" value="{{ seo_setting.default_canonical_url or '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    <p class="mt-1 text-sm text-gray-500">默认规范URL，用于防止重复内容问题</p>
+                <div class="sm:col-span-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">默认规范URL</label>
+                    <input type="text" name="default_canonical_url" value="{{ seo_setting.default_canonical_url or '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <p class="mt-1 text-sm text-gray-500">默认规范URL，用于防止重复内容问题。留空则使用当前页面URL。SEO推荐: 使用标准域名（如 https://yoursite.com）</p>
+                    <div class="mt-2">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">SEO推荐选项:</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded border" onclick="setCanonicalUrl('https://{{ request.host }}')">当前域名</button>
+                            <button type="button" class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded border" onclick="setCanonicalUrl('')">清空</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -142,4 +149,10 @@
         </form>
     </div>
 </div>
+
+<script>
+    function setCanonicalUrl(url) {
+        document.querySelector('input[name="default_canonical_url"]').value = url;
+    }
+</script>
 {% endblock %}

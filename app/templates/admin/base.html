@@ -8,6 +8,7 @@
     {% block styles %}{% endblock %}
 </head>
 <body class="bg-gray-100">
+    <!-- 顶部导航栏 -->
     <nav class="bg-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
@@ -42,6 +43,54 @@
         </div>
     </nav>
 
+    <!-- 左侧抽屉式导航栏 -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0">
+        <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+            <a href="{{ url_for('main.index') }}" class="text-xl font-bold text-indigo-600">小芝士</a>
+            <button id="closeSidebar" class="lg:hidden text-gray-500 hover:text-gray-700">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="flex flex-col h-[calc(100vh-4rem)] overflow-y-auto">
+            <nav class="flex-1 px-2 py-4 space-y-1">
+                <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}bg-indigo-50 border-indigo-500 text-indigo-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium rounded-md">仪表板</a>
+                <a href="{{ url_for('admin.posts') }}" class="{% if request.endpoint == 'admin.posts' or request.endpoint == 'admin.create_post' or request.endpoint == 'admin.edit_post' %}bg-indigo-50 border-indigo-500 text-indigo-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium rounded-md">文章管理</a>
+                <a href="{{ url_for('admin.categories') }}" class="{% if request.endpoint == 'admin.categories' or request.endpoint == 'admin.create_category' or request.endpoint == 'admin.edit_category' %}bg-indigo-50 border-indigo-500 text-indigo-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium rounded-md">分类管理</a>
+                <a href="{{ url_for('admin.users') }}" class="{% if request.endpoint == 'admin.users' or request.endpoint == 'admin.create_user' or request.endpoint == 'admin.edit_user' %}bg-indigo-50 border-indigo-500 text-indigo-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium rounded-md">用户管理</a>
+                <a href="{{ url_for('admin_seo.index') }}" class="{% if request.endpoint == 'admin_seo.index' or request.endpoint == 'admin_seo.update' %}bg-indigo-50 border-indigo-500 text-indigo-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium rounded-md">SEO设置</a>
+                <a href="{{ url_for('main.dashboard') }}" class="{% if request.endpoint == 'main.dashboard' %}bg-indigo-50 border-indigo-500 text-indigo-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium rounded-md">前台控制台</a>
+            </nav>
+            <div class="px-4 py-4 border-t border-gray-200">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <span class="h-8 w-8 rounded-full bg-indigo-100 text-indigo-800 flex items-center justify-center">
+                            {{ current_user.username[0].upper() }}
+                        </span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-700">{{ current_user.username }}</p>
+                        <a href="{{ url_for('auth.logout') }}" class="text-sm text-indigo-600 hover:text-indigo-900">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 打开侧边栏按钮 -->
+    <button id="openSidebar" class="fixed top-4 left-4 z-50 lg:hidden bg-white p-2 rounded-md shadow-md text-gray-500 hover:text-gray-700">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+    
+
+    <!-- 遮罩层 -->
+    <div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-black opacity-0 hidden transition-opacity duration-300 ease-in-out lg:hidden"></div>
+
+
+    <!-- 内容区域 -->
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -66,7 +115,14 @@
             {% endif %}
         {% endwith %}
 
-        {% block content %}{% endblock %}
+        <div class="flex">
+
+            
+            <!-- 主要内容区域 -->
+            <div class="flex-1">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
     </div>
 
     <footer class="bg-white mt-8">
@@ -76,6 +132,50 @@
             </p>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const openSidebar = document.getElementById('openSidebar');
+            const closeSidebar = document.getElementById('closeSidebar');
+            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+            function openMenu() {
+                sidebar.classList.remove('-translate-x-full');
+                sidebarBackdrop.classList.remove('hidden');
+                setTimeout(() => {
+                    sidebarBackdrop.classList.add('opacity-50');
+                }, 10);
+            }
+
+            function closeMenu() {
+                sidebarBackdrop.classList.remove('opacity-50');
+                setTimeout(() => {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarBackdrop.classList.add('hidden');
+                }, 300);
+            }
+
+            openSidebar.addEventListener('click', openMenu);
+            closeSidebar.addEventListener('click', closeMenu);
+            sidebarBackdrop.addEventListener('click', closeMenu);
+
+            // 在大屏幕时隐藏关闭按钮
+            if (window.innerWidth >= 1024) {
+                closeSidebar.classList.add('hidden');
+            }
+
+            // 监听窗口大小变化
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) {
+                    sidebar.classList.remove('-translate-x-full');
+                    closeSidebar.classList.add('hidden');
+                } else {
+                    closeSidebar.classList.remove('hidden');
+                }
+            });
+        });
+    </script>
 
     {% block scripts %}{% endblock %}
 </body>

@@ -65,4 +65,7 @@ def create_app():
     from .admin.seo import bp as seo_bp
     app.register_blueprint(seo_bp)
     
+    from .admin.ai import bp as ai_bp
+    app.register_blueprint(ai_bp)
+    
     return app
