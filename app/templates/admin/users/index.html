@@ -90,17 +90,20 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ user.created_at.strftime('%Y-%m-%d') }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="{{ url_for('admin.edit_user', id=user.id) }}" class="text-indigo-600 hover:text-indigo-900">
-                                    编辑
-                                </a>
-                                {% if user.id != current_user.id %}
-                                <a href="#" onclick="if(confirm('确定要删除用户 {{ user.username }} 吗？')) { document.getElementById('delete-form-{{ user.id }}').submit(); }" class="ml-4 text-red-600 hover:text-red-900">
-                                    删除
-                                </a>
-                                <form id="delete-form-{{ user.id }}" action="{{ url_for('admin.delete_user', id=user.id) }}" method="POST" style="display: none;">
-                                </form>
-                                {% endif %}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{{ url_for('admin.edit_user', id=user.id) }}" class="text-indigo-600 hover:text-indigo-900">
+                                    编辑
+                                </a>
+                                <a href="{{ url_for('admin.change_user_password', id=user.id) }}" class="ml-4 text-green-600 hover:text-green-900">
+                                    修改密码
+                                </a>
+                                {% if user.id != current_user.id %}
+                                <a href="#" onclick="if(confirm('确定要删除用户 {{ user.username }} 吗？')) { document.getElementById('delete-form-{{ user.id }}').submit(); }" class="ml-4 text-red-600 hover:text-red-900">
+                                    删除
+                                </a>
+                                <form id="delete-form-{{ user.id }}" action="{{ url_for('admin.delete_user', id=user.id) }}" method="POST" style="display: none;">
+                                </form>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}

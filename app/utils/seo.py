@@ -97,30 +97,47 @@ def get_post_seo_data(post):
         'canonical_url': canonical_url
     }
 
-def get_category_seo_data(category):
-    """获取分类SEO数据"""
-    # 分类特定SEO设置优先
-    title = category.seo_title or category.name
-    description = category.seo_description or (category.description[:160] if category.description else '')
-    keywords = category.seo_keywords or ''
-    
-    # 规范URL
-    canonical_url = url_for('main.category_posts', slug=category.slug, _external=True)
-    
-    return {
-        'title': title,
-        'description': description,
-        'keywords': keywords,
-        'canonical_url': canonical_url
+def get_category_seo_data(category):
+    """获取分类SEO数据"""
+    # 分类特定SEO设置优先
+    title = category.seo_title or category.name
+    description = category.seo_description or (category.description[:160] if category.description else '')
+    keywords = category.seo_keywords or ''
+    
+    # 规范URL
+    canonical_url = url_for('main.category_posts', slug=category.slug, _external=True)
+    
+    return {
+        'title': title,
+        'description': description,
+        'keywords': keywords,
+        'canonical_url': canonical_url
+    }
+
+def get_search_seo_data(query):
+    """获取搜索页面SEO数据"""
+    seo_settings = get_seo_settings()
+    site_title = seo_settings.site_title if seo_settings else '现代化博客系统' if seo_settings else '现代化博客系统'
+    
+    title = f"搜索结果：{query} - {site_title}" if query else f"搜索 - {site_title}"
+    description = f"关于 '{query}' 的搜索结果" if query else "网站搜索页面"
+    keywords = query if query else ''
+    canonical_url = url_for('main.search', q=query, _external=True) if query else url_for('main.search', _external=True)
+    
+    return {
+        'title': title,
+        'description': description,
+        'keywords': keywords,
+        'canonical_url': canonical_url
     }
 
-# 确保函数在模板中可用
-def register_seo_functions(app):
-    """注册SEO相关函数到应用上下文"""
-    @app.context_processor
-    def inject_seo_functions():
-        return dict(
-            get_post_seo_data=get_post_seo_data,
-            get_category_seo_data=get_category_seo_data,
-            generate_meta_tags=generate_meta_tags
+def register_seo_functions(app):
+    """注册SEO相关函数到应用上下文"""
+    @app.context_processor
+    def inject_seo_functions():
+        return dict(
+            get_post_seo_data=get_post_seo_data,
+            get_category_seo_data=get_category_seo_data,
+            get_search_seo_data=get_search_seo_data,
+            generate_meta_tags=generate_meta_tags
         )

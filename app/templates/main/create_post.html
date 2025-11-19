@@ -1,15 +1,43 @@
-{% extends "base.html" %}
-
-{% block title %}创建文章 - 现代化博客系统{% endblock %}
-
-{% block content %}
-<div class="max-w-7xl mx-auto">
-    <div class="md:flex md:items-center md:justify-between mb-6">
-        <div class="flex-1 min-w-0">
-            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-                创建文章
-            </h2>
-        </div>
+{% extends "base.html" %}
+
+{% block title %}创建文章 - 现代化博客系统{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="md:flex md:items-center md:justify-between mb-6">
+        <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                创建文章
+            </h2>
+        </div>
+    </div>
+    
+    <!-- AI生成表单 -->
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">AI生成文章</h3>
+        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+            <div class="sm:col-span-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">输入主题</label>
+                <input type="text" id="ai-topic" placeholder="例如：人工智能在医疗领域的应用" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div class="sm:col-span-2 flex items-end">
+                <button id="generate-ai-content" type="button" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                    生成文章
+                </button>
+            </div>
+        </div>
+        <div id="ai-loading" class="hidden mt-4 text-center text-gray-500">
+            <p>AI正在生成内容，请稍候...</p>
+            <div class="mt-2">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="ai-progress-bar" class="bg-purple-600 h-2 rounded-full transition-all duration-300 ease-in-out" style="width: 0%"></div>
+                </div>
+                <p id="ai-progress-text" class="mt-1 text-sm text-gray-600">准备中...</p>
+            </div>
+        </div>
+        <div id="ai-error" class="hidden mt-4 text-center text-red-500">
+            <p></p>
+        </div>
     </div>
 
     <div class="bg-white shadow rounded-lg p-6">
@@ -120,32 +148,183 @@
         border-top: none !important;
     }
 </style>
-<script src="https://unpkg.com/@wangeditor/editor@5.1.23/dist/index.js"></script>
-<script>
-    let editor;
-    let toolbarCreated = false; // 标记工具栏是否已创建
-    
-    // 确保DOM加载完成后初始化编辑器
-    document.addEventListener('DOMContentLoaded', function() {
-        // 检查wangEditor是否已加载
-        if (typeof window.wangEditor === 'undefined') {
-            console.error('wangEditor 未正确加载');
-            return;
+<script src="https://unpkg.com/@wangeditor/editor@5.1.23/dist/index.js"></script>
+<script>
+    let editor;
+    let toolbarCreated = false; // 标记工具栏是否已创建
+    
+    // 确保DOM加载完成后初始化编辑器
+    document.addEventListener('DOMContentLoaded', function() {
+        // 检查wangEditor是否已加载
+        if (typeof window.wangEditor === 'undefined') {
+            console.error('wangEditor 未正确加载');
+            return;
+        }
+
+        // AI生成内容功能
+        const generateBtn = document.getElementById('generate-ai-content');
+        if (generateBtn) {
+            console.log('AI生成按钮已找到，添加事件监听器');
+            generateBtn.addEventListener('click', async function() {
+                console.log('生成按钮被点击');
+                const topic = document.getElementById('ai-topic').value.trim();
+                if (!topic) {
+                    alert('请输入文章主题');
+                    return;
+                }
+                
+                const loadingElement = document.getElementById('ai-loading');
+                const errorElement = document.getElementById('ai-error');
+                const progressBar = document.getElementById('ai-progress-bar');
+                const progressText = document.getElementById('ai-progress-text');
+                
+                // 重置进度条
+                progressBar.style.width = '0%';
+                progressText.textContent = '准备生成...';
+                
+                loadingElement.classList.remove('hidden');
+                errorElement.classList.add('hidden');
+                
+                try {
+                    // 模拟进度更新
+                    let progress = 0;
+                    const progressInterval = setInterval(() => {
+                        if (progress < 90) {
+                            progress += 5;
+                            progressBar.style.width = progress + '%';
+                            progressText.textContent = `生成中... ${progress}%`;
+                        }
+                    }, 500);
+                    
+                    console.log('发送请求到AI生成接口');
+                    const response = await fetch('/admin/ai/generate-content', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ topic: topic })
+                    });
+                    
+                    console.log('收到响应，状态码:', response.status);
+                    
+                    // 停止模拟进度
+                    clearInterval(progressInterval);
+                    
+                    const data = await response.json();
+                    console.log('解析响应数据:', data);
+                    
+                    if (response.ok && data.success) {
+                        // 更新进度到100%
+                        progressBar.style.width = '100%';
+                        progressText.textContent = '生成完成！';
+                        
+                        // 填充表单字段
+                        document.querySelector('input[name="title"]').value = data.content.title || '';
+                        document.querySelector('input[name="slug"]').value = data.content.slug || '';
+                        
+                        // 设置分类下拉框
+                        const categorySelect = document.querySelector('select[name="category_id"]');
+                        let categoryFound = false;
+                        if (data.content.category_id) {
+                            for (let i = 0; i < categorySelect.options.length; i++) {
+                                if (parseInt(categorySelect.options[i].value) === data.content.category_id) {
+                                    categorySelect.selectedIndex = i;
+                                    categoryFound = true;
+                                    break;
+                                }
+                            }
+                        }
+                        // 如果未找到匹配的分类，尝试通过分类名匹配
+                        if (!categoryFound && data.content.category) {
+                            for (let i = 0; i < categorySelect.options.length; i++) {
+                                if (categorySelect.options[i].text === data.content.category) {
+                                    categorySelect.selectedIndex = i;
+                                    categoryFound = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        document.querySelector('select[name="status"]').value = data.content.status || 'draft';
+                        document.querySelector('textarea[name="excerpt"]').value = data.content.excerpt || '';
+                        
+                        // 填充编辑器内容
+                        if (editor) {
+                            try {
+                                // 清空编辑器内容然后插入新内容
+                                editor.clear();
+                                // 使用 dangerouslyInsertHTML 插入HTML内容
+                                editor.dangerouslyInsertHTML(data.content.content || '');
+                            } catch (e) {
+                                console.error('使用dangerouslyInsertHTML失败:', e);
+                                try {
+                                    // 如果上述方法失败，尝试使用 setHtml 方法
+                                    editor.setHtml(data.content.content || '');
+                                } catch (e2) {
+                                    console.error('使用setHtml也失败:', e2);
+                                    // 如果所有方法都失败，直接设置编辑器元素的HTML
+                                    const editorElement = document.querySelector('.w-e-text-container .w-e-text');
+                                    if (editorElement) {
+                                        editorElement.innerHTML = data.content.content || '';
+                                    }
+                                }
+                            }
+                        } else {
+                            document.getElementById('editor').innerHTML = data.content.content || '';
+                        }
+                        
+                        document.querySelector('input[name="seo_title"]').value = data.content.seo_title || '';
+                        document.querySelector('textarea[name="seo_description"]').value = data.content.seo_description || '';
+                        document.querySelector('input[name="seo_keywords"]').value = data.content.seo_keywords || '';
+                        document.querySelector('input[name="seo_og_image"]').value = data.content.seo_og_image || '';
+                        
+                        // 显示成功消息并稍后隐藏加载状态
+                        setTimeout(() => {
+                            alert('AI文章生成成功！');
+                            loadingElement.classList.add('hidden');
+                        }, 500);
+                    } else {
+                        // 更新进度条为错误状态
+                        progressBar.style.width = '100%';
+                        progressBar.className = 'bg-red-600 h-2 rounded-full transition-all duration-300 ease-in-out';
+                        progressText.textContent = '生成失败';
+                        throw new Error(data.message || 'AI生成失败');
+                    }
+                } catch (error) {
+                    clearInterval(progressInterval);
+                    progressBar.style.width = '100%';
+                    progressBar.className = 'bg-red-600 h-2 rounded-full transition-all duration-300 ease-in-out';
+                    progressText.textContent = '生成失败';
+                    console.error('AI生成错误:', error);
+                    errorElement.querySelector('p').textContent = `AI生成失败: ${error.message}`;
+                    errorElement.classList.remove('hidden');
+                    setTimeout(() => {
+                        loadingElement.classList.add('hidden');
+                    }, 2000);
+                } finally {
+                    // 确保在错误情况下也能重置进度条样式
+                    if (!progressBar.className.includes('bg-red-600')) {
+                        progressBar.className = 'bg-purple-600 h-2 rounded-full transition-all duration-300 ease-in-out';
+                    }
+                }
+            });
+        } else {
+            console.error('未找到ID为generate-ai-content的按钮');
         }
         
-        // 检查是否已有工具栏容器，避免重复创建
-        let toolbarContainer = document.getElementById('toolbar-container');
-        if (!toolbarContainer) {
-            // 创建一个工具栏容器元素
-            toolbarContainer = document.createElement('div');
-            toolbarContainer.id = 'toolbar-container';
-            toolbarContainer.style.border = '1px solid #d1d5db';
-            toolbarContainer.style.borderBottom = 'none';
-            toolbarContainer.style.borderRadius = '0.375rem 0.375rem 0 0';
-            toolbarContainer.style.marginBottom = '0';
-            toolbarContainer.style.backgroundColor = '#f9fafb';
-            const elem = document.getElementById('editor');
-            elem.parentNode.insertBefore(toolbarContainer, elem);
+        // 检查是否已有工具栏容器，避免重复创建
+        let toolbarContainer = document.getElementById('toolbar-container');
+        if (!toolbarContainer) {
+            // 创建一个工具栏容器元素
+            toolbarContainer = document.createElement('div');
+            toolbarContainer.id = 'toolbar-container';
+            toolbarContainer.style.border = '1px solid #d1d5db';
+            toolbarContainer.style.borderBottom = 'none';
+            toolbarContainer.style.borderRadius = '0.375rem 0.375rem 0 0';
+            toolbarContainer.style.marginBottom = '0';
+            toolbarContainer.style.backgroundColor = '#f9fafb';
+            const elem = document.getElementById('editor');
+            elem.parentNode.insertBefore(toolbarContainer, elem);
         }
         
         // 初始化富文本编辑器

@@ -6,10 +6,27 @@ from datetime import datetime
 
 bp = Blueprint('main', __name__)
 
-@bp.route('/')
-def index():
-    posts = Post.query.filter_by(status='published').order_by(Post.created_at.desc()).limit(10).all()
-    return render_template('main/index.html', posts=posts)
+@bp.route('/')
+def index():
+    posts = Post.query.filter_by(status='published').order_by(Post.created_at.desc()).limit(10).all()
+    return render_template('main/index.html', posts=posts)
+
+@bp.route('/search')
+def search():
+    query = request.args.get('q', '', type=str)
+    page = request.args.get('page', 1, type=int)
+    
+    if query:
+        posts = Post.query.filter(
+            (Post.title.contains(query) | Post.content.contains(query) | Post.excerpt.contains(query)) &
+            (Post.status == 'published')
+        ).order_by(Post.created_at.desc()).paginate(
+            page=page, per_page=10, error_out=False)
+    else:
+        posts = Post.query.filter_by(status='published').order_by(Post.created_at.desc()).paginate(
+            page=page, per_page=10, error_out=False)
+    
+    return render_template('main/search_results.html', posts=posts, query=query)
 
 @bp.route('/post/<slug>')
 def post_detail(slug):

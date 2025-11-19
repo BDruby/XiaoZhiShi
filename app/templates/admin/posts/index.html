@@ -3,18 +3,35 @@
 {% block title %}文章管理 - 小芝士{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto">
-    <div class="md:flex md:items-center md:justify-between mb-6">
-        <div class="flex-1 min-w-0">
-            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-                文章管理
-            </h2>
-        </div>
-        <div class="mt-4 flex md:mt-0 md:ml-4">
-            <a href="{{ url_for('admin.create_post') }}" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                添加文章
-            </a>
-        </div>
+<div class="max-w-7xl mx-auto">
+    <div class="md:flex md:items-center md:justify-between mb-6">
+        <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                文章管理
+            </h2>
+        </div>
+        <div class="mt-4 flex md:mt-0 md:ml-4">
+            <a href="{{ url_for('admin.create_post') }}" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                添加文章
+            </a>
+        </div>
+    </div>
+    
+    <!-- 搜索框 -->
+    <div class="mb-6 bg-white p-4 rounded-lg shadow">
+        <form method="GET" action="{{ url_for('admin.posts') }}">
+            <div class="flex items-center">
+                <input type="text" name="search" value="{{ search|default('') }}" placeholder="搜索文章标题、内容或摘要..." class="flex-1 px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    搜索
+                </button>
+                {% if search %}
+                <a href="{{ url_for('admin.posts') }}" class="ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    清除搜索
+                </a>
+                {% endif %}
+            </div>
+        </form>
     </div>
 
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">

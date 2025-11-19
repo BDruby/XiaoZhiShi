@@ -43,9 +43,25 @@
                                 <span class="text-indigo-600">{{ post.category.name }}</span>
                             {% endif %}
                         </div>
-                        <p class="text-gray-600 mb-4">
-                            {{ post.excerpt or post.content[:200] + '...' if post.content|length > 200 else post.content }}
-                        </p>
+                        <p class="text-gray-600 mb-4">
+                            {{ post.excerpt or post.content[:200] + '...' if post.content|length > 200 else post.content }}
+                        </p>
+                        
+                        <!-- 标签显示区域 -->
+                        {% if post.tags %}
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            {% for tag in post.tags[:3] %} <!-- 限制显示前3个标签 -->
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors duration-200">
+                                {{ tag.name }}
+                            </span>
+                            {% endfor %}
+                            {% if post.tags|length > 3 %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                +{{ post.tags|length - 3 }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                         <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="text-indigo-600 hover:text-indigo-800 font-medium">
                             阅读全文 →
                         </a>

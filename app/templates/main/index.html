@@ -7,11 +7,23 @@
 ) | safe }}
 {% endblock %}
 
-{% block content %}
-<div class="max-w-3xl mx-auto">
-    <div class="text-center mb-10">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">欢迎来到小芝士</h1>
-        <p class="text-xl text-gray-600">分享知识，记录生活</p>
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">欢迎来到小芝士</h1>
+        <p class="text-xl text-gray-600">分享知识，记录生活</p>
+    </div>
+    
+    <!-- 搜索框 -->
+    <div class="mb-8 bg-white p-4 rounded-lg shadow">
+        <form method="GET" action="{{ url_for('main.search') }}">
+            <div class="flex items-center">
+                <input type="text" name="q" placeholder="搜索文章标题、内容或摘要..." class="flex-1 px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    搜索
+                </button>
+            </div>
+        </form>
     </div>
 
     {% if posts %}
@@ -25,22 +37,40 @@
                         <h2 class="post-card-title" onclick="window.location.href='{{ url_for('main.post_detail', slug=post.slug) }}'; event.stopPropagation();">
                             {{ post.title }}
                         </h2>
-                        <div class="post-card-meta" onclick="event.stopPropagation();">
-                            <span>作者: {{ post.author.username }}</span>
-                            <span class="mx-2">•</span>
-                            <span>{{ post.created_at.strftime('%Y-%m-%d') }}</span>
-                            {% if post.category %}
-                                <span class="mx-2">•</span>
-                                <span class="text-indigo-600">{{ post.category.name }}</span>
-                            {% endif %}
+                                                <div class="post-card-meta" onclick="event.stopPropagation();">
+                            <span>作者: {{ post.author.username }}</span>
+                            <span class="mx-2">•</span>
+                            <span>{{ post.created_at.strftime('%Y-%m-%d') }}</span>
+                            {% if post.category %}
+                                <span class="mx-2">•</span>
+                                <a href="{{ url_for('main.category_posts', slug=post.category.slug) }}" class="text-indigo-600 hover:text-indigo-800 hover:underline" onclick="event.stopPropagation();">
+                                    {{ post.category.name }}
+                                </a>
+                            {% endif %}
                         </div>
-                        <p class="post-card-excerpt" onclick="event.stopPropagation();">
-                            {% if post.excerpt %}
-                                {{ post.excerpt|striptags|truncate(200, true, '...') }}
-                            {% else %}
-                                {{ post.content|striptags|truncate(200, true, '...') }}
-                            {% endif %}
-                        </p>
+                        <p class="post-card-excerpt" onclick="event.stopPropagation();">
+                            {% if post.excerpt %}
+                                {{ post.excerpt|striptags|truncate(200, true, '...') }}
+                            {% else %}
+                                {{ post.content|striptags|truncate(200, true, '...') }}
+                            {% endif %}
+                        </p>
+                        
+                        <!-- 标签显示区域 -->
+                        {% if post.tags %}
+                        <div class="flex flex-wrap gap-2 mb-3" onclick="event.stopPropagation();">
+                            {% for tag in post.tags[:3] %} <!-- 限制显示前3个标签 -->
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors duration-200">
+                                {{ tag.name }}
+                            </span>
+                            {% endfor %}
+                            {% if post.tags|length > 3 %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                +{{ post.tags|length - 3 }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                         <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="post-card-link" onclick="event.stopPropagation();">
                             阅读全文
                         </a>

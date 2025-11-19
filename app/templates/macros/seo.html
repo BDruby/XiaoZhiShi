@@ -16,10 +16,10 @@
         {% set twitter_handle = '' %}
     {% endif %}
 
-    {% set final_title = (title + ' - ' + site_title) if title and title != '' else site_title %}
-    {% set final_description = description if description and description != '' else site_description %}
-    {% set final_keywords = keywords if keywords and keywords != '' else site_keywords %}
-    {% set final_og_image = og_image if og_image and og_image != '' else og_image_default %}
+    {% set final_title = (title|string + ' - ' + site_title) if title and title != '' else site_title %}
+    {% set final_description = description|string if description and description != '' else site_description %}
+    {% set final_keywords = keywords|string if keywords and keywords != '' else site_keywords %}
+    {% set final_og_image = og_image|string if og_image and og_image != '' else og_image_default %}
 
     <title>{{ final_title }}</title>
     <meta name="description" content="{{ final_description }}">

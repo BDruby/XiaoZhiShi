@@ -17,7 +17,7 @@
     {% set og_image = post.seo_og_image or (post.featured_image if post.featured_image else '') %}
     {% set canonical_url = url_for('main.post_detail', slug=post.slug, _external=True) %}
     
-    {{- {'title': title, 'description': description, 'keywords': keywords, 'og_image': og_image, 'canonical_url': canonical_url} -}}
+    {{- {'title': title|string, 'description': description|string, 'keywords': keywords|string, 'og_image': og_image|string, 'canonical_url': canonical_url} -}}
 {% endmacro %}
 
 {% macro get_category_seo_data(category) %}
@@ -25,7 +25,7 @@
     {% set title = category.seo_title or category.name %}
     {% set description = category.seo_description or (category.description[:160] if category.description else '') %}
     {% set keywords = category.seo_keywords or '' %}
-    {% set canonical_url = url_for('main.category', slug=category.slug, _external=True) %}
+    {% set canonical_url = url_for('main.category_posts', slug=category.slug, _external=True) %}
     
-    {{- {'title': title, 'description': description, 'keywords': keywords, 'canonical_url': canonical_url} -}}
+    {{- {'title': title|string, 'description': description|string, 'keywords': keywords|string, 'canonical_url': canonical_url} -}}
 {% endmacro %}
