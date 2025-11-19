@@ -1,141 +1,177 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}小芝士管理后台{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography,forms,line-clamp"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block styles %}{% endblock %}
 </head>
-<body class="bg-gray-100">
+
+<body class="bg-gray-50 font-sans text-gray-800 antialiased selection:bg-primary-500 selection:text-white">
+    <!-- Background Decoration -->
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+        <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary-100 rounded-full blur-3xl opacity-50 pointer-events-none">
+        </div>
+        <div
+            class="absolute bottom-0 right-0 w-[800px] h-[600px] bg-purple-100 rounded-full blur-3xl opacity-50 pointer-events-none">
+        </div>
+    </div>
+
     <!-- 顶部导航栏 -->
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4">
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <div class="flex">
+                <div class="flex items-center">
                     <div class="flex-shrink-0 flex items-center">
-                        <a href="{{ url_for('main.index') }}" class="text-xl font-bold text-indigo-600">小芝士</a>
+                        <a href="{{ url_for('main.index') }}"
+                            class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-purple-600 hover:opacity-80 transition-opacity">
+                            小芝士后台
+                        </a>
                     </div>
-                    <div class="hidden md:ml-6 md:flex md:space-x-8">
-                        <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">仪表板</a>
-                        <a href="{{ url_for('admin.posts') }}" class="{% if request.endpoint == 'admin.posts' or request.endpoint == 'admin.create_post' or request.endpoint == 'admin.edit_post' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">文章管理</a>
-                        <a href="{{ url_for('admin.categories') }}" class="{% if request.endpoint == 'admin.categories' or request.endpoint == 'admin.create_category' or request.endpoint == 'admin.edit_category' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">分类管理</a>
-                        <a href="{{ url_for('admin.tags') }}" class="{% if request.endpoint == 'admin.tags' or request.endpoint == 'admin.create_tag' or request.endpoint == 'admin.edit_tag' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">标签管理</a>
-                        <a href="{{ url_for('admin.users') }}" class="{% if request.endpoint == 'admin.users' or request.endpoint == 'admin.create_user' or request.endpoint == 'admin.edit_user' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">用户管理</a>
-                        <a href="{{ url_for('admin_seo.index') }}" class="{% if request.endpoint == 'admin_seo.index' or request.endpoint == 'admin_seo.update' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">SEO设置</a>
-                        <a href="{{ url_for('main.dashboard') }}" class="{% if request.endpoint == 'main.dashboard' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">前台控制台</a>
+                    <div class="hidden md:ml-10 md:flex md:space-x-8">
+                        <a href="{{ url_for('admin.dashboard') }}"
+                            class="{% if request.endpoint == 'admin.dashboard' %}text-primary-600 border-b-2 border-primary-600{% else %}text-gray-500 hover:text-gray-700 hover:border-gray-300 border-b-2 border-transparent{% endif %} inline-flex items-center px-1 pt-1 text-sm font-medium transition-all duration-200">
+                            仪表板
+                        </a>
+                        <a href="{{ url_for('admin.posts') }}"
+                            class="{% if 'admin.posts' in request.endpoint or 'admin.create_post' in request.endpoint or 'admin.edit_post' in request.endpoint %}text-primary-600 border-b-2 border-primary-600{% else %}text-gray-500 hover:text-gray-700 hover:border-gray-300 border-b-2 border-transparent{% endif %} inline-flex items-center px-1 pt-1 text-sm font-medium transition-all duration-200">
+                            文章管理
+                        </a>
+                        <a href="{{ url_for('admin.categories') }}"
+                            class="{% if 'admin.categories' in request.endpoint or 'admin.create_category' in request.endpoint or 'admin.edit_category' in request.endpoint %}text-primary-600 border-b-2 border-primary-600{% else %}text-gray-500 hover:text-gray-700 hover:border-gray-300 border-b-2 border-transparent{% endif %} inline-flex items-center px-1 pt-1 text-sm font-medium transition-all duration-200">
+                            分类管理
+                        </a>
+                        <a href="{{ url_for('admin.tags') }}"
+                            class="{% if 'admin.tags' in request.endpoint or 'admin.create_tag' in request.endpoint or 'admin.edit_tag' in request.endpoint %}text-primary-600 border-b-2 border-primary-600{% else %}text-gray-500 hover:text-gray-700 hover:border-gray-300 border-b-2 border-transparent{% endif %} inline-flex items-center px-1 pt-1 text-sm font-medium transition-all duration-200">
+                            标签管理
+                        </a>
+                        <a href="{{ url_for('admin.users') }}"
+                            class="{% if 'admin.users' in request.endpoint or 'admin.create_user' in request.endpoint or 'admin.edit_user' in request.endpoint %}text-primary-600 border-b-2 border-primary-600{% else %}text-gray-500 hover:text-gray-700 hover:border-gray-300 border-b-2 border-transparent{% endif %} inline-flex items-center px-1 pt-1 text-sm font-medium transition-all duration-200">
+                            用户管理
+                        </a>
+                        <a href="{{ url_for('admin_seo.index') }}"
+                            class="{% if 'admin_seo' in request.endpoint %}text-primary-600 border-b-2 border-primary-600{% else %}text-gray-500 hover:text-gray-700 hover:border-gray-300 border-b-2 border-transparent{% endif %} inline-flex items-center px-1 pt-1 text-sm font-medium transition-all duration-200">
+                            SEO设置
+                        </a>
                     </div>
                 </div>
-                <div class="flex items-center">
-                    <div class="ml-3 relative">
-                        <div>
-                            <button class="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <div class="relative ml-3 group">
+                            <button
+                                class="flex items-center max-w-xs text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-transform transform group-hover:scale-105">
                                 <span class="sr-only">Open user menu</span>
-                                <span class="h-8 w-8 rounded-full bg-indigo-100 text-indigo-800 flex items-center justify-center">
+                                <div
+                                    class="h-9 w-9 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 text-white flex items-center justify-center font-bold shadow-md">
                                     {{ current_user.username[0].upper() }}
-                                </span>
+                                </div>
                             </button>
+                            <div
+                                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2">
+                                <a href="{{ url_for('main.dashboard') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">前台控制台</a>
+                                <a href="{{ url_for('auth.logout') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">退出</a>
+                            </div>
                         </div>
                     </div>
-                    <a href="{{ url_for('main.dashboard') }}" class="ml-4 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">控制台</a>
-                    <a href="{{ url_for('auth.logout') }}" class="ml-4 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">退出</a>
                 </div>
             </div>
         </div>
     </nav>
 
-
-    <!-- 遮罩层 -->
-    <div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-black opacity-0 hidden transition-opacity duration-300 ease-in-out lg:hidden"></div>
-
-
-    <!-- 内容区域 -->
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {% with messages = get_flashed_messages(with_categories=true) %}
+    <main class="pt-24 pb-12 min-h-screen relative z-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="max-w-7xl mx-auto px-4 py-4">
-                    {% for category, message in messages %}
-                        <div class="rounded-md bg-{{ 'green' if category == 'success' else 'red' if category == 'error' else 'blue' }}-50 p-4">
-                            <div class="flex">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-5 w-5 text-{{ 'green' if category == 'success' else 'red' if category == 'error' else 'blue' }}-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <div class="ml-3">
-                                    <h3 class="text-sm font-medium text-{{ 'green' if category == 'success' else 'red' if category == 'error' else 'blue' }}-800">
-                                        {{ message }}
-                                    </h3>
-                                </div>
-                            </div>
+            <div class="mb-6 animate-fade-in">
+                {% for category, message in messages %}
+                <div
+                    class="rounded-lg p-4 mb-4 shadow-sm border border-opacity-20 {{ 'bg-green-50 border-green-200 text-green-700' if category == 'success' else 'bg-red-50 border-red-200 text-red-700' if category == 'error' else 'bg-blue-50 border-blue-200 text-blue-700' }}">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            {% if category == 'success' %}
+                            <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            {% elif category == 'error' %}
+                            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            {% else %}
+                            <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            {% endif %}
                         </div>
-                    {% endfor %}
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">{{ message }}</p>
+                        </div>
+                    </div>
                 </div>
-            {% endif %}
-        {% endwith %}
-
-        <div class="flex">
-
-            
-            <!-- 主要内容区域 -->
-            <div class="flex-1">
-                {% block content %}{% endblock %}
+                {% endfor %}
             </div>
-        </div>
-    </div>
+            {% endif %}
+            {% endwith %}
 
-    <footer class="bg-white mt-8">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <p class="text-center text-sm text-gray-500">
-                &copy; 2025 CheesePress 在AI的加持下，每个人都可能成为一个超级个体
-            </p>
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-100 mt-auto">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p class="text-sm text-gray-400">
+                    &copy; 2025 CheesePress. All rights reserved. Powered by AI.
+                </p>
+            </div>
         </div>
     </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar');
-            const openSidebar = document.getElementById('openSidebar');
-            const closeSidebar = document.getElementById('closeSidebar');
-            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-
-            function openMenu() {
-                sidebar.classList.remove('-translate-x-full');
-                sidebarBackdrop.classList.remove('hidden');
-                setTimeout(() => {
-                    sidebarBackdrop.classList.add('opacity-50');
-                }, 10);
-            }
-
-            function closeMenu() {
-                sidebarBackdrop.classList.remove('opacity-50');
-                setTimeout(() => {
-                    sidebar.classList.add('-translate-x-full');
-                    sidebarBackdrop.classList.add('hidden');
-                }, 300);
-            }
-
-            openSidebar.addEventListener('click', openMenu);
-            closeSidebar.addEventListener('click', closeMenu);
-            sidebarBackdrop.addEventListener('click', closeMenu);
-
-            // 在大屏幕时隐藏关闭按钮
-            if (window.innerWidth >= 1024) {
-                closeSidebar.classList.add('hidden');
-            }
-
-            // 监听窗口大小变化
-            window.addEventListener('resize', function() {
-                if (window.innerWidth >= 1024) {
-                    sidebar.classList.remove('-translate-x-full');
-                    closeSidebar.classList.add('hidden');
-                } else {
-                    closeSidebar.classList.remove('hidden');
-                }
-            });
-        });
-    </script>
-
-    {% block scripts %}{% endblock %}
+    {% block scripts %}
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    {% endblock %}
 </body>
+
 </html>

@@ -1,31 +1,45 @@
 {% macro get_seo_settings() %}
-    {# 从后端获取SEO设置 #}
-    {# 注意：这里需要通过后端上下文处理器提供seo_settings变量 #}
-    {%- if seo_settings -%}
-        {{- seo_settings -}}
-    {%- else -%}
-        {# 返回默认值 #}
-        {{- {'site_title': '现代化博客系统', 'site_description': '', 'site_keywords': '', 'site_author': '', 'og_image': '', 'twitter_handle': ''} -}}
-    {%- endif -%}
+{# 从后端获取SEO设置 #}
+{# 注意：这里需要通过后端上下文处理器提供seo_settings变量 #}
+{%- if seo_settings -%}
+{{- seo_settings -}}
+{%- else -%}
+{# 返回默认值 #}
+{{- {'site_title': '现代化博客系统', 'site_description': '', 'site_keywords': '', 'site_author': '', 'og_image': '',
+'twitter_handle': ''} -}}
+{%- endif -%}
 {% endmacro %}
 
 {% macro get_post_seo_data(post) %}
-    {# 获取文章SEO数据 #}
-    {% set title = post.seo_title or post.title %}
-    {% set description = post.seo_description or (post.excerpt[:160] if post.excerpt else '') %}
-    {% set keywords = post.seo_keywords or '' %}
-    {% set og_image = post.seo_og_image or (post.featured_image if post.featured_image else '') %}
-    {% set canonical_url = url_for('main.post_detail', slug=post.slug, _external=True) %}
-    
-    {{- {'title': title|string, 'description': description|string, 'keywords': keywords|string, 'og_image': og_image|string, 'canonical_url': canonical_url} -}}
+{# 获取文章SEO数据 #}
+{% set title = post.seo_title or post.title %}
+{% set description = post.seo_description or (post.excerpt[:160] if post.excerpt else '') %}
+{% set keywords = post.seo_keywords or '' %}
+{% set og_image = post.seo_og_image or (post.featured_image if post.featured_image else '') %}
+{% set canonical_url = url_for('main.post_detail', slug=post.slug, _external=True) %}
+
+{{- {'title': title|string, 'description': description|string, 'keywords': keywords|string, 'og_image': og_image|string,
+'canonical_url': canonical_url} -}}
 {% endmacro %}
 
 {% macro get_category_seo_data(category) %}
-    {# 获取分类SEO数据 #}
-    {% set title = category.seo_title or category.name %}
-    {% set description = category.seo_description or (category.description[:160] if category.description else '') %}
-    {% set keywords = category.seo_keywords or '' %}
-    {% set canonical_url = url_for('main.category_posts', slug=category.slug, _external=True) %}
-    
-    {{- {'title': title|string, 'description': description|string, 'keywords': keywords|string, 'canonical_url': canonical_url} -}}
+{# 获取分类SEO数据 #}
+{% set title = category.seo_title or category.name %}
+{% set description = category.seo_description or (category.description[:160] if category.description else '') %}
+{% set keywords = category.seo_keywords or '' %}
+{% set canonical_url = url_for('main.category_posts', slug=category.slug, _external=True) %}
+
+{{- {'title': title|string, 'description': description|string, 'keywords': keywords|string, 'canonical_url':
+canonical_url} -}}
+{% endmacro %}
+
+{% macro get_search_seo_data(query) %}
+{# 获取搜索结果页SEO数据 #}
+{% set title = '搜索结果: ' + query if query else '搜索' %}
+{% set description = '关于 "' + query + '" 的搜索结果' if query else '搜索文章' %}
+{% set keywords = query + ', 搜索' if query else '搜索' %}
+{% set canonical_url = url_for('main.search', q=query, _external=True) %}
+
+{{- {'title': title|string, 'description': description|string, 'keywords': keywords|string, 'canonical_url':
+canonical_url} -}}
 {% endmacro %}
