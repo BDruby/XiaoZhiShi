@@ -11,7 +11,7 @@ from sqlalchemy import func
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 # 导入SEO模块（这里导入是为了注册路由，即使没有直接使用变量）
-from app.admin import seo
+from app.admin import seo, settings
 
 @bp.before_request
 @login_required
@@ -46,9 +46,21 @@ def dashboard():
 @bp.route('/users')
 def users():
     page = request.args.get('page', 1, type=int)
-    users = User.query.order_by(User.created_at.desc()).paginate(
+    search = request.args.get('search', '', type=str)
+    
+    query = User.query
+    
+    if search:
+        query = query.filter(
+            (User.username.contains(search)) | 
+            (User.email.contains(search)) |
+            (User.first_name.contains(search)) |
+            (User.last_name.contains(search))
+        )
+    
+    users = query.order_by(User.created_at.desc()).paginate(
         page=page, per_page=10, error_out=False)
-    return render_template('admin/users/index.html', users=users)
+    return render_template('admin/users/index.html', users=users, search=search)
 
 @bp.route('/users/create', methods=['GET', 'POST'])
 def create_user():
@@ -71,35 +83,25 @@ def create_user():
         return redirect(url_for('admin.users'))
     
     return render_template('admin/users/create.html', form=form)
-
 @bp.route('/users/<int:id>/edit', methods=['GET', 'POST'])
 def edit_user(id):
     user = User.query.get_or_404(id)
     form = AdminEditUserForm(original_username=user.username, original_email=user.email, obj=user)
     
     if form.validate_on_submit():
-        # 检查用户名是否已被其他用户使用
-        existing_user = User.query.filter(User.username == form.username.data, User.id != id).first()
-        if existing_user:
-            flash('用户名已存在', 'error')
-            return render_template('admin/users/edit.html', form=form, user=user)
-        
-        # 检查邮箱是否已被其他用户使用
-        existing_email = User.query.filter(User.email == form.email.data, User.id != id).first()
-        if existing_email:
-            flash('邮箱已被注册', 'error')
-            return render_template('admin/users/edit.html', form=form, user=user)
-        
+        # 更新用户信息
         user.username = form.username.data
         user.email = form.email.data
         user.first_name = form.first_name.data
         user.last_name = form.last_name.data
         user.role = form.role.data
+        user.is_active = form.is_active.data
+        user.bio = form.bio.data
         
-        # 只有在输入新密码时才更新密码
+        # 如果提供了新密码，则更新密码
         if form.password.data:
             user.set_password(form.password.data)
-            
+        
         db.session.commit()
         flash('用户信息更新成功', 'success')
         return redirect(url_for('admin.users'))

@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+
+{% block title %}系统设置 - 管理后台{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">系统设置</h1>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">一般设置</h2>
+
+            <form method="POST" class="space-y-6">
+                <!-- 注册开关 -->
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900">开放用户注册</h3>
+                        <p class="text-sm text-gray-500">开启后，访客可以注册新账号。关闭后，只有管理员可以添加用户。</p>
+                    </div>
+                    <div class="flex items-center">
+                        <label for="registration_open" class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="registration_open" name="registration_open" class="sr-only peer"
+                                {% if registration_open %}checked{% endif %}>
+                            <div
+                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-4">
+                    <button type="submit"
+                        class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 focus:ring-4 focus:ring-blue-300 transition duration-200 shadow-md hover:shadow-lg flex items-center">
+                        <i class="fas fa-save mr-2"></i> 保存设置
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

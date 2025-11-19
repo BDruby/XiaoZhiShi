@@ -71,10 +71,29 @@ def generate_post_with_ai():
         'Content-Type': 'application/json'
     }
     
+        # 定义优化后的提示词变量（使用三引号以支持多行文本）
+    prompt_template = f"""
+    你是一位在相关领域拥有多年经验的专家博主。
+    请撰写一篇关于 "{topic}" 的深度博客文章。
+
+    文章要求：
+    1. 目标受众：想要入门的初学者及寻求进阶的专业人士。
+    2. 语气风格：专业、客观，但通俗易懂，避免过于晦涩的术语。
+    3. 结构安排：
+    - 引人入胜的标题：包含关键词，具有点击欲望。
+    - 引言：用一个痛点或故事作为钩子（Hook）吸引读者。
+    - 正文：使用 H2 和 H3 标题分层级阐述，包含具体的案例分析或数据支持。
+    - 结论：总结全文，并给出一个具体的行动建议。
+    4. SEO优化：确保文章自然地包含与主题相关的关键词。
+
+    请使用 Markdown 格式输出。
+    """
+
+    # 构建 payload
     payload = {
         'model': 'deepseek-chat',
         'messages': [
-            {'role': 'user', 'content': f'请写一篇关于"{topic}"的详细博客文章，包含引言、正文和结论。'}
+            {'role': 'user', 'content': prompt_template}
         ],
         'stream': False
     }

@@ -25,6 +25,35 @@
         </div>
     </div>
 
+    <!-- 搜索栏 -->
+    <div class="mb-6">
+        <form action="{{ url_for('admin.users') }}" method="GET" class="flex gap-4">
+            <div class="relative flex-1 max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <input type="text" name="search" value="{{ search }}"
+                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-150 ease-in-out"
+                    placeholder="搜索用户名、邮箱或姓名...">
+            </div>
+            <button type="submit"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                搜索
+            </button>
+            {% if search %}
+            <a href="{{ url_for('admin.users') }}"
+                class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                清除
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
     <div class="bg-white shadow-lg rounded-2xl overflow-hidden border border-gray-100">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
@@ -83,13 +112,13 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-900">
-                                {{ user.first_name }} {{ user.last_name }}
+                                {{ user.first_name or '' }} {{ user.last_name or '' }}
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span
-                                class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-100">
-                                {{ user.role }}
+                                class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full {{ 'bg-purple-50 text-purple-700 border border-purple-100' if user.role == 'admin' else 'bg-blue-50 text-blue-700 border border-blue-100' if user.role == 'editor' else 'bg-gray-50 text-gray-700 border border-gray-100' }}">
+                                {{ '管理员' if user.role == 'admin' else '编辑' if user.role == 'editor' else '普通用户' }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -148,17 +177,18 @@
             </table>
         </div>
 
-        <!-- 分页 -->
+        <!-- 分页导航 -->
+        {% if users.pages > 1 %}
         <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
             <div class="flex-1 flex justify-between sm:hidden">
                 {% if users.has_prev %}
-                <a href="{{ url_for('admin.users', page=users.prev_num) }}"
+                <a href="{{ url_for('admin.users', page=users.prev_num, search=search) }}"
                     class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                     上一页
                 </a>
                 {% endif %}
                 {% if users.has_next %}
-                <a href="{{ url_for('admin.users', page=users.next_num) }}"
+                <a href="{{ url_for('admin.users', page=users.next_num, search=search) }}"
                     class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                     下一页
                 </a>
@@ -168,16 +198,15 @@
                 <div>
                     <p class="text-sm text-gray-700">
                         显示第 <span class="font-medium">{{ (users.page - 1) * users.per_page + 1 }}</span> 到 <span
-                            class="font-medium">{{ [users.page * users.per_page, users.total]|min }}</span> 条记录，共 <span
-                            class="font-medium">{{ users.total }}</span> 条记录
+                            class="font-medium">{{ min(users.page * users.per_page, users.total) }}</span> 条，
+                        共 <span class="font-medium">{{ users.total }}</span> 条记录
                     </p>
                 </div>
                 <div>
                     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                         {% if users.has_prev %}
-                        <a href="{{ url_for('admin.users', page=users.prev_num) }}"
+                        <a href="{{ url_for('admin.users', page=users.prev_num, search=search) }}"
                             class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <span class="sr-only">上一页</span>
                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                 fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -187,31 +216,31 @@
                         </a>
                         {% endif %}
 
-                        {% for page_num in users.iter_pages() %}
+                        {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2)
+                        %}
                         {% if page_num %}
-                        {% if page_num != users.page %}
-                        <a href="{{ url_for('admin.users', page=page_num) }}"
+                        {% if page_num == users.page %}
+                        <span
+                            class="relative inline-flex items-center px-4 py-2 border border-primary-500 bg-primary-50 text-sm font-medium text-primary-600">
+                            {{ page_num }}
+                        </span>
+                        {% else %}
+                        <a href="{{ url_for('admin.users', page=page_num, search=search) }}"
                             class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
                             {{ page_num }}
                         </a>
-                        {% else %}
-                        <span
-                            class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary-50 text-sm font-medium text-primary-600">
-                            {{ page_num }}
-                        </span>
                         {% endif %}
                         {% else %}
                         <span
                             class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                            …
+                            ...
                         </span>
                         {% endif %}
                         {% endfor %}
 
                         {% if users.has_next %}
-                        <a href="{{ url_for('admin.users', page=users.next_num) }}"
+                        <a href="{{ url_for('admin.users', page=users.next_num, search=search) }}"
                             class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <span class="sr-only">下一页</span>
                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                 fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -224,6 +253,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

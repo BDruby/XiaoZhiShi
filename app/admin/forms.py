@@ -1,6 +1,6 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, ValidationError
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SelectField, SubmitField, BooleanField, TextAreaField
+from wtforms.validators import DataRequired, Email, Length, ValidationError, Optional
 from app.models import User
 
 class AdminEditUserForm(FlaskForm):
@@ -8,8 +8,10 @@ class AdminEditUserForm(FlaskForm):
     first_name = StringField('名字', validators=[Length(max=50)])
     last_name = StringField('姓氏', validators=[Length(max=50)])
     email = StringField('邮箱', validators=[DataRequired(), Email()])
-    password = PasswordField('密码', validators=[Length(min=6)])  # 移除DataRequired，允许不修改密码
+    password = PasswordField('密码', validators=[Optional(), Length(min=6)])
     role = SelectField('角色', choices=[('user', '普通用户'), ('editor', '编辑'), ('admin', '管理员')], validators=[DataRequired()])
+    is_active = BooleanField('账户状态 (启用/禁用)')
+    bio = TextAreaField('个人简介', validators=[Length(max=500)])
     submit = SubmitField('更新用户')
 
     def __init__(self, original_username=None, original_email=None, *args, **kwargs):

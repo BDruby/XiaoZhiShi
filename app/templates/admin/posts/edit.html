@@ -3,101 +3,97 @@
 {% block title %}编辑文章 - 管理后台{% endblock %}
 
 {% block content %}
-<div class="animate-fade-in">
-    <div class="md:flex md:items-center md:justify-between mb-8">
+<div class="max-w-7xl mx-auto">
+    <div class="md:flex md:items-center md:justify-between mb-6">
         <div class="flex-1 min-w-0">
-            <h2
-                class="text-3xl font-bold leading-7 text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-purple-600 sm:text-4xl sm:truncate">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
                 编辑文章
             </h2>
-            <p class="mt-1 text-sm text-gray-500">编辑文章内容和属性</p>
         </div>
         <div class="mt-4 flex md:mt-0 md:ml-4">
             <a href="{{ url_for('admin.posts') }}"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all">
+                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 返回列表
             </a>
         </div>
     </div>
 
-    <div class="bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
+    <div class="bg-white shadow rounded-lg p-6">
         <form method="POST">
-            <div class="grid grid-cols-1 gap-y-8 gap-x-6 sm:grid-cols-6">
-                <!-- 标题 -->
+            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                 <div class="sm:col-span-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">标题</label>
-                    <input type="text" name="title" value="{{ post.title }}" required
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-shadow">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">标题</label>
+                    <input type="text" name="title" id="title" value="{{ post.title }}" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
 
-                <!-- URL别名 -->
                 <div class="sm:col-span-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">URL别名</label>
-                    <div class="mt-1 flex rounded-xl shadow-sm">
-                        <span
-                            class="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                            /post/
-                        </span>
-                        <input type="text" name="slug" value="{{ post.slug }}" required
-                            class="flex-1 block w-full px-4 py-3 min-w-0 border border-gray-300 rounded-none rounded-r-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-shadow">
-                    </div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">URL别名</label>
+                    <input type="text" name="slug" id="slug" value="{{ post.slug }}" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
 
-                <!-- 分类 -->
                 <div class="sm:col-span-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">分类</label>
-                    <select name="category_id"
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-shadow">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">分类</label>
+                    <select name="category_id" id="category_id"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                         <option value="">请选择分类</option>
                         {% for category in categories %}
-                        <option value="{{ category.id }}" {{ 'selected' if post.category_id==category.id }}>{{
+                        <option value="{{ category.id }}" {% if post.category_id==category.id %}selected{% endif %}>{{
                             category.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <!-- 状态 -->
                 <div class="sm:col-span-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">状态</label>
-                    <select name="status"
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-shadow">
-                        <option value="draft" {{ 'selected' if post.status=='draft' }}>草稿</option>
-                        <option value="published" {{ 'selected' if post.status=='published' }}>已发布</option>
-                        <option value="archived" {{ 'selected' if post.status=='archived' }}>已归档</option>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                    <select name="status" id="status"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="draft" {% if post.status=='draft' %}selected{% endif %}>草稿</option>
+                        <option value="published" {% if post.status=='published' %}selected{% endif %}>已发布</option>
+                        <option value="archived" {% if post.status=='archived' %}selected{% endif %}>已归档</option>
                     </select>
                 </div>
 
-                <!-- 摘要 -->
                 <div class="sm:col-span-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">摘要</label>
-                    <textarea name="excerpt" rows="3"
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-shadow">{{ post.excerpt }}</textarea>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">摘要</label>
+                    <textarea name="excerpt" id="excerpt" rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">{{ post.excerpt or '' }}</textarea>
                 </div>
 
-                <!-- 内容 -->
                 <div class="sm:col-span-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">内容</label>
-                    <div
-                        class="border border-gray-300 rounded-xl overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500 transition-shadow">
-                        <div id="toolbar-container" class="border-b border-gray-300 bg-gray-50"></div>
-                        <div id="editor" style="min-height: 500px;"></div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">内容</label>
+                    <div class="mb-2 flex justify-end">
+                        <button type="button" id="openMediaLibrary"
+                            class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            插入图片
+                        </button>
                     </div>
-                    <input type="hidden" id="content" name="content" required value="{{ post.content }}">
+                    <div id="editor"
+                        style="border: 1px solid #d1d5db; border-top: none; min-height: 300px; height: 300px; border-radius: 0 0 0.375rem 0.375rem;">
+                        <!-- 编辑器内容将在此处渲染 -->
+                    </div>
+                    <input type="hidden" id="content" name="content" value="{{ post.content }}" required>
                 </div>
 
-                <!-- 标签 -->
                 <div class="sm:col-span-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">标签</label>
-                    <div class="mt-1 p-4 border border-gray-300 rounded-xl bg-gray-50 shadow-inner">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">标签</label>
+                    <div class="mt-1">
                         <!-- 已选标签显示区域 -->
-                        <div id="selected-tags" class="mb-3 flex flex-wrap gap-2 min-h-[2.5rem]">
+                        <div id="selected-tags"
+                            class="mb-2 flex flex-wrap gap-2 min-h-10 p-2 border border-gray-300 rounded-md bg-gray-50">
                             {% for tag in post.tags %}
                             <span
-                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white text-primary-700 border border-primary-200 shadow-sm tag-item"
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 tag-item"
                                 data-tag-id="{{ tag.id }}">
                                 {{ tag.name }}
                                 <button type="button"
-                                    class="flex-shrink-0 ml-1.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-primary-400 hover:bg-primary-100 hover:text-primary-600 focus:outline-none tag-remove transition-colors"
+                                    class="flex-shrink-0 ml-1 h-4 w-4 rounded-full inline-flex items-center justify-center text-indigo-400 hover:bg-indigo-200 hover:text-indigo-500 focus:outline-none tag-remove"
                                     data-tag-id="{{ tag.id }}">
                                     <span class="sr-only">移除标签</span>
                                     <svg class="h-3 w-3" stroke="currentColor" fill="none" viewBox="0 0 8 8">
@@ -111,15 +107,15 @@
 
                         <!-- 标签选择器 -->
                         <div class="relative">
-                            <input type="text" id="tag-search" placeholder="搜索或创建标签 (按Enter添加)..."
-                                class="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-shadow bg-white">
+                            <input type="text" id="tag-search" placeholder="搜索或选择标签..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
 
                             <!-- 标签下拉选项 -->
                             <div id="tag-dropdown"
-                                class="absolute z-10 mt-1 w-full bg-white shadow-xl rounded-lg py-1 hidden max-h-60 overflow-auto border border-gray-100 ring-1 ring-black ring-opacity-5"
+                                class="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 hidden max-h-60 overflow-auto"
                                 style="display: none;">
                                 {% for tag in all_tags %}
-                                <div class="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-primary-50 hover:text-primary-700 tag-option transition-colors"
+                                <div class="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-indigo-50 tag-option"
                                     data-tag-id="{{ tag.id }}" data-tag-name="{{ tag.name }}">
                                     {{ tag.name }}
                                 </div>
@@ -127,65 +123,69 @@
                             </div>
                         </div>
                     </div>
-                    <p class="mt-2 text-sm text-gray-500">输入标签名称并按Enter键添加，点击标签上的X按钮移除。</p>
+                    <p class="mt-1 text-sm text-gray-500">点击标签选项添加，点击标签上的X按钮移除</p>
                 </div>
 
                 <!-- SEO 设置 -->
-                <div class="sm:col-span-6 pt-6 border-t border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                        <svg class="h-5 w-5 text-primary-500 mr-2" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        SEO 设置
-                    </h3>
+                <div class="sm:col-span-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4 mt-6">SEO 设置</h3>
                 </div>
 
                 <div class="sm:col-span-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">SEO 标题</label>
-                    <input type="text" name="seo_title" value="{{ post.seo_title or '' }}"
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-shadow">
-                    <p class="mt-1 text-xs text-gray-500">如果留空，将使用文章标题</p>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">SEO 标题</label>
+                    <input type="text" name="seo_title" id="seo_title" value="{{ post.seo_title or '' }}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <p class="mt-1 text-sm text-gray-500">如果留空，将使用文章标题</p>
                 </div>
 
                 <div class="sm:col-span-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">SEO 描述</label>
-                    <textarea name="seo_description" rows="3"
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-shadow">{{ post.seo_description or '' }}</textarea>
-                    <p class="mt-1 text-xs text-gray-500">如果留空，将使用文章摘要</p>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">SEO 描述</label>
+                    <textarea name="seo_description" id="seo_description" rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">{{ post.seo_description or '' }}</textarea>
+                    <p class="mt-1 text-sm text-gray-500">如果留空，将使用文章摘要</p>
                 </div>
 
                 <div class="sm:col-span-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">SEO 关键词</label>
-                    <input type="text" name="seo_keywords" value="{{ post.seo_keywords or '' }}"
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-shadow">
-                    <p class="mt-1 text-xs text-gray-500">多个关键词用逗号分隔</p>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">SEO 关键词</label>
+                    <input type="text" name="seo_keywords" id="seo_keywords" value="{{ post.seo_keywords or '' }}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <p class="mt-1 text-sm text-gray-500">多个关键词请用逗号分隔</p>
                 </div>
 
                 <div class="sm:col-span-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">SEO Open Graph 图片</label>
-                    <div class="flex gap-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">SEO OG 图片</label>
+                    <div class="flex items-center gap-2">
                         <input type="text" name="seo_og_image" id="seo_og_image" value="{{ post.seo_og_image or '' }}"
-                            class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-shadow">
-                        <button type="button" id="openMediaLibrary"
-                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <button type="button" id="selectOgImage"
+                            class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
                             选择图片
                         </button>
                     </div>
-                    <p class="mt-1 text-xs text-gray-500">如果留空，将使用特色图片</p>
+                    <div id="seo_og_image_preview" class="mt-2 {% if not post.seo_og_image %}hidden{% endif %}">
+                        <img src="{{ post.seo_og_image or '' }}" alt="OG Image Preview"
+                            class="h-32 w-auto object-cover rounded border border-gray-200">
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500">社交媒体分享时显示的图片URL</p>
                 </div>
-            </div>
 
-            <div class="mt-8 pt-6 border-t border-gray-100 flex justify-end gap-4">
-                <a href="{{ url_for('admin.posts') }}"
-                    class="px-6 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all">
-                    取消
-                </a>
-                <button type="submit"
-                    class="px-6 py-3 border border-transparent shadow-md text-sm font-medium rounded-xl text-white bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all transform hover:-translate-y-0.5">
-                    更新文章
-                </button>
+                <div class="sm:col-span-6 pt-5">
+                    <div class="flex justify-end">
+                        <a href="{{ url_for('admin.posts') }}"
+                            class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            取消
+                        </a>
+                        <button type="submit"
+                            class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            保存修改
+                        </button>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -193,118 +193,387 @@
 
 <link href="https://unpkg.com/@wangeditor/editor@5.1.23/dist/css/style.css" rel="stylesheet">
 <style>
+    #toolbar-container {
+        z-index: 10;
+    }
+
+    #editor {
+        z-index: 0;
+    }
+
     .w-e-toolbar {
-        border-bottom: 1px solid #e5e7eb !important;
-        background-color: #f9fafb !important;
+        border-radius: 0.375rem 0.375rem 0 0 !important;
+        border-bottom: 1px solid #d1d5db !important;
     }
 
     .w-e-text-container {
-        background-color: #fff !important;
-    }
-
-    .w-e-text-placeholder {
-        top: 20px !important;
+        border-radius: 0 0 0.375rem 0.375rem !important;
+        border-top: none !important;
     }
 </style>
 <script src="https://unpkg.com/@wangeditor/editor@5.1.23/dist/index.js"></script>
-<script src="{{ url_for('static', filename='js/tag-selector.js') }}"></script>
 <script>
     let editor;
-    let toolbarCreated = false;
+    let toolbarCreated = false; // 标记工具栏是否已创建
 
+    // 确保DOM加载完成后初始化编辑器
     document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOM内容加载完成');
+
+        // 检查wangEditor是否已加载
         if (typeof window.wangEditor === 'undefined') {
             console.error('wangEditor 未正确加载');
             return;
         }
 
+        // 检查是否已有工具栏容器，避免重复创建
+        let toolbarContainer = document.getElementById('toolbar-container');
+        if (!toolbarContainer) {
+            // 创建一个工具栏容器元素
+            toolbarContainer = document.createElement('div');
+            toolbarContainer.id = 'toolbar-container';
+            toolbarContainer.style.border = '1px solid #d1d5db';
+            toolbarContainer.style.borderBottom = 'none';
+            toolbarContainer.style.borderRadius = '0.375rem 0.375rem 0 0';
+            toolbarContainer.style.marginBottom = '0';
+            toolbarContainer.style.backgroundColor = '#f9fafb';
+            const elem = document.getElementById('editor');
+            elem.parentNode.insertBefore(toolbarContainer, elem);
+        }
+
+        // 初始化富文本编辑器
         const E = window.wangEditor;
         const editorConfig = {
             placeholder: '请输入文章内容...',
             MENU_CONF: {},
-            onChange(editor) {
-                const html = editor.getHtml();
-                document.getElementById('content').value = html;
-            },
-            onCreated(editor) {
-                const contentValue = document.getElementById('content').value;
-                if (contentValue) {
-                    editor.setHtml(contentValue);
+            onCreated: (editorInstance) => {
+                editor = editorInstance;
+                console.log('编辑器创建完成');
+
+                // 设置初始内容
+                const initialContent = document.getElementById('content').value;
+                if (initialContent) {
+                    editor.setHtml(initialContent);
                 }
             }
         };
 
+        // 配置图片上传
         editorConfig.MENU_CONF['uploadImage'] = {
-            server: '/media/upload',
-            fieldName: 'file',
-            maxFileSize: 2 * 1024 * 1024,
-            maxNumberOfFiles: 10,
+            server: '/media/upload', // 图片上传接口，需要后端支持
+            fieldName: 'file', // formData 中的参数名，与后端一致
+            maxFileSize: 2 * 1024 * 1000, // 2M
+            maxNumberOfFiles: 10, // 最大上传数量
             allowedFileTypes: ['image/*'],
+            // 自定义插入图片
             customInsert(res, insertFn) {
+                // res 即服务端的返回结果
+                console.log('上传响应:', res); // 调试日志
+                // 根据后端实际返回格式调整
                 if (res.success && res.file_path) {
-                    insertFn(res.file_path, res.original_filename || '', '');
+                    insertFn(res.file_path, res.original_filename || '', ''); // 插入图片
                 } else if (res.url) {
-                    insertFn(res.url, res.alt || '', '');
+                    insertFn(res.url, res.alt || '', ''); // 兼容其他格式
                 } else {
                     alert('上传失败或返回格式不正确');
                 }
             }
         };
 
-        if (!toolbarCreated) {
-            editor = E.createEditor({
-                selector: '#editor',
+        // 确保wangEditor已正确加载且工具栏未创建
+        if (typeof E !== 'undefined' && E.createEditor && E.createToolbar && !toolbarCreated) {
+            const elem = document.getElementById('editor');
+
+            // 创建编辑器
+            const wangEditor = E.createEditor({
+                selector: elem,
                 config: editorConfig,
                 mode: 'default'
             });
 
+            // 创建工具栏
             const toolbar = E.createToolbar({
-                editor: editor,
+                editor: wangEditor,
                 selector: '#toolbar-container',
                 mode: 'default'
             });
 
-            toolbarCreated = true;
+            toolbarCreated = true; // 标记工具栏已创建
+        } else {
+            console.error('wangEditor 未正确加载或工具栏已存在');
+        }
+
+        // 表单提交前获取编辑器内容
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                console.log('表单提交事件触发');
+                // 检查编辑器是否已初始化
+                if (editor) {
+                    // 将编辑器内容更新到隐藏字段
+                    const contentValue = editor.getHtml();
+                    document.getElementById('content').value = contentValue;
+                    console.log('编辑器内容已设置:', contentValue);
+                } else {
+                    console.error('编辑器未初始化');
+                    // 如果编辑器未初始化，使用编辑器容器的innerHTML作为备选
+                    const editorContent = document.getElementById('editor').innerHTML;
+                    document.getElementById('content').value = editorContent;
+                    console.log('使用备选内容:', editorContent);
+                }
+                // 确保表单可以正常提交
+                console.log('表单即将提交');
+            });
         }
 
         // 媒体库集成
+        let imageSelectTarget = null; // 'editor' or 'seo_og_image'
+
+        // 打开媒体库 - 编辑器
         const openMediaBtn = document.getElementById('openMediaLibrary');
         if (openMediaBtn) {
             openMediaBtn.addEventListener('click', function () {
+                imageSelectTarget = 'editor';
                 window.open('/media/', 'mediaLibrary', 'width=800,height=600');
             });
         }
 
+        // 打开媒体库 - SEO OG Image
+        const selectOgImageBtn = document.getElementById('selectOgImage');
+        if (selectOgImageBtn) {
+            selectOgImageBtn.addEventListener('click', function () {
+                imageSelectTarget = 'seo_og_image';
+                window.open('/media/', 'mediaLibrary', 'width=800,height=600');
+            });
+        }
+
+        // 监听从媒体库插入图片的事件（通过窗口通信）
         window.addEventListener('message', function (event) {
+            console.log('接收到消息:', event.data);
             if (event.data && event.data.type === 'insertImage') {
                 const imageData = event.data.image;
-                if (imageData && imageData.url) {
-                    // 如果是SEO图片输入框
-                    const seoImageInput = document.getElementById('seo_og_image');
-                    if (document.activeElement === seoImageInput || document.activeElement === openMediaBtn) {
-                        seoImageInput.value = imageData.url;
+                console.log('准备插入图片:', imageData);
+
+                if (!imageData.url) {
+                    console.error('图片URL为空');
+                    alert('图片URL为空，无法插入');
+                    return;
+                }
+
+                // 根据目标插入图片
+                if (imageSelectTarget === 'seo_og_image') {
+                    const ogImageInput = document.getElementById('seo_og_image');
+                    if (ogImageInput) {
+                        ogImageInput.value = imageData.url;
+
+                        // 更新预览
+                        const previewContainer = document.getElementById('seo_og_image_preview');
+                        if (previewContainer) {
+                            const previewImage = previewContainer.querySelector('img');
+                            if (previewImage) {
+                                previewImage.src = imageData.url;
+                                previewContainer.classList.remove('hidden');
+                            }
+                        }
                     }
-                    // 否则插入到编辑器
-                    else if (editor) {
-                        editor.insertNode({
-                            type: 'image',
-                            src: imageData.url,
-                            alt: imageData.alt || '图片',
-                            style: { maxWidth: '100%' }
-                        });
+                } else {
+                    // 默认为编辑器
+                    if (editor) {
+                        // 插入图片到编辑器
+                        try {
+                            // 尝试多种API方法
+                            let inserted = false;
+
+                            // 方法1: 使用dangerouslyInsertHtml (wangEditor v5 API)
+                            if (editor.dangerouslyInsertHtml && typeof editor.dangerouslyInsertHtml === 'function') {
+                                const imgHtml = `<img src="${imageData.url}" alt="${imageData.alt || '图片'}" style="max-width:100%; display: block; margin: 10px 0;"/>`;
+                                editor.dangerouslyInsertHtml(imgHtml);
+                                inserted = true;
+                            }
+                            // 方法2: 尝试直接插入图片节点
+                            else if (editor.insertElem && typeof editor.insertElem === 'function') {
+                                editor.insertElem({
+                                    type: 'image',
+                                    src: imageData.url,
+                                    alt: imageData.alt || '图片',
+                                    style: { maxWidth: '100%', display: 'block', margin: '10px 0' }
+                                });
+                                inserted = true;
+                            }
+                            // 方法3: 尝试通过编辑器命令
+                            else if (editor.getSelectionContainerElem && typeof editor.getSelectionContainerElem === 'function') {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = imageData.url;
+                                imgElement.alt = imageData.alt || '图片';
+                                imgElement.style.cssText = 'max-width:100%; display: block; margin: 10px 0;';
+
+                                // 直接操作编辑器内容
+                                const container = editor.getSelectionContainerElem();
+                                if (container) {
+                                    container.append(imgElement);
+                                } else {
+                                    // 如果无法获取当前光标位置，直接添加到编辑器末尾
+                                    const editorBody = editor.getElemsByType('paragraph').pop() || editor.children[editor.children.length - 1];
+                                    if (editorBody && editorBody.append) {
+                                        editorBody.append(imgElement);
+                                    } else {
+                                        // 最后尝试直接操作DOM
+                                        const editorDom = document.querySelector('.w-e-text-container .w-e-text');
+                                        if (editorDom) {
+                                            editorDom.appendChild(imgElement);
+                                        }
+                                    }
+                                }
+                                inserted = true;
+                            }
+
+                            if (!inserted) {
+                                console.error('未找到合适的插入方法');
+                                alert('当前编辑器版本不支持自动插入，请手动复制图片URL到编辑器中');
+                                return;
+                            }
+
+                            console.log('图片已成功插入到编辑器:', imageData.url);
+                        } catch (error) {
+                            console.error('插入图片时出错:', error);
+                            alert('插入图片时发生错误，请重试: ' + error.message);
+                        }
+                    } else {
+                        console.error('编辑器未初始化，无法插入图片');
+                        alert('编辑器未初始化，无法插入图片，请稍后重试');
                     }
                 }
             }
         });
 
-        // 初始化标签选择器
-        const tagSelector = new TagSelector({
-            searchInput: '#tag-search',
-            dropdown: '#tag-dropdown',
-            selectedContainer: '#selected-tags',
-            tagOption: '.tag-option',
-            tagRemove: '.tag-remove',
-            tagItem: '.tag-item'
+        // 标签选择器功能
+        const tagSearch = document.getElementById('tag-search');
+        const tagDropdown = document.getElementById('tag-dropdown');
+        const selectedTagsContainer = document.getElementById('selected-tags');
+        // 初始化已选标签
+        let selectedTags = [];
+        document.querySelectorAll('.tag-item').forEach(item => {
+            const tagId = parseInt(item.getAttribute('data-tag-id'));
+            if (!isNaN(tagId)) {
+                selectedTags.push(tagId);
+            }
+        });
+
+        // 更新标签选项显示状态
+        function updateTagOptions() {
+            const tagOptions = document.querySelectorAll('.tag-option');
+            tagOptions.forEach(option => {
+                const tagId = parseInt(option.getAttribute('data-tag-id'));
+                if (selectedTags.includes(tagId)) {
+                    option.style.display = 'none'; // 隐藏已选择的标签
+                } else {
+                    option.style.display = 'block'; // 显示未选择的标签
+                }
+            });
+        }
+
+        // 初始化时更新一次
+        updateTagOptions();
+
+        // 显示标签选择下拉框
+        tagSearch.addEventListener('focus', function () {
+            updateTagOptions(); // 更新标签选项显示状态
+            tagDropdown.style.display = 'block';
+        });
+
+        // 隐藏标签选择下拉框
+        tagSearch.addEventListener('blur', function () {
+            // 延迟隐藏，确保点击选项的操作能完成
+            setTimeout(() => {
+                tagDropdown.style.display = 'none';
+            }, 200);
+        });
+
+        // 搜索过滤功能
+        tagSearch.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+            const tagOptions = document.querySelectorAll('.tag-option');
+            tagOptions.forEach(option => {
+                const tagName = option.getAttribute('data-tag-name').toLowerCase();
+                const tagId = parseInt(option.getAttribute('data-tag-id'));
+
+                // 检查标签是否已经选择
+                const isAlreadySelected = selectedTags.includes(tagId);
+
+                // 只有当标签未被选择且匹配搜索词时才显示
+                if (!isAlreadySelected && tagName.includes(searchTerm)) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        });
+
+        // 点击标签选项
+        tagDropdown.addEventListener('click', function (e) {
+            const clickedOption = e.target.closest('.tag-option');
+            if (clickedOption) {
+                const tagId = parseInt(clickedOption.getAttribute('data-tag-id'));
+                const tagName = clickedOption.getAttribute('data-tag-name');
+
+                // 检查标签是否已经选择
+                if (!selectedTags.includes(tagId)) {
+                    selectedTags.push(tagId);
+
+                    // 创建标签元素
+                    const tagElement = document.createElement('span');
+                    tagElement.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 tag-item';
+                    tagElement.setAttribute('data-tag-id', tagId);
+
+                    tagElement.innerHTML = `
+                        ${tagName}
+                        <button type="button" class="flex-shrink-0 ml-1 h-4 w-4 rounded-full inline-flex items-center justify-center text-indigo-400 hover:bg-indigo-200 hover:text-indigo-500 focus:outline-none tag-remove" data-tag-id="${tagId}">
+                            <span class="sr-only">移除标签</span>
+                            <svg class="h-3 w-3" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                            </svg>
+                        </button>
+                        <input type="hidden" name="tag_ids" value="${tagId}">
+                    `;
+
+                    selectedTagsContainer.appendChild(tagElement);
+
+                    // 更新标签选项状态
+                    updateTagOptions();
+
+                    // 清空搜索框
+                    tagSearch.value = '';
+                }
+
+                tagDropdown.style.display = 'none';
+            }
+        });
+
+        // 使用事件委托处理标签移除
+        selectedTagsContainer.addEventListener('click', function (e) {
+            // 找到点击的移除按钮
+            let removeBtn = null;
+            if (e.target.classList.contains('tag-remove')) {
+                removeBtn = e.target;
+            } else {
+                removeBtn = e.target.closest('.tag-remove');
+            }
+
+            if (removeBtn) {
+                const tagId = parseInt(removeBtn.getAttribute('data-tag-id'));
+
+                // 从选中数组中移除
+                selectedTags = selectedTags.filter(id => id !== tagId);
+
+                // 移除DOM元素
+                const tagItem = removeBtn.closest('.tag-item');
+                if (tagItem) {
+                    tagItem.remove();
+                }
+
+                // 更新选项显示状态
+                updateTagOptions();
+            }
         });
     });
 </script>

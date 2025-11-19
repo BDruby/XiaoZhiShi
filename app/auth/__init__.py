@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
-from app.models import db, User
+from app.models import db, User, Setting
 from app.auth.forms import LoginForm, RegisterForm
 
 bp = Blueprint('auth', __name__)
@@ -22,6 +22,11 @@ def login():
             user = User.query.filter_by(username=username_or_email).first()
         
         if user and user.check_password(form.password.data):
+            # 检查用户是否被禁用
+            if not user.is_active:
+                flash('您的账户已被禁用，请联系管理员', 'error')
+                return render_template('auth/login.html', form=form)
+                
             login_user(user, remember=form.remember_me.data)
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('main.index'))
@@ -33,6 +38,12 @@ def login():
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
+    
+    # 检查注册是否开放
+    registration_open_setting = Setting.query.filter_by(key='registration_open').first()
+    if registration_open_setting and registration_open_setting.value == 'false':
+        flash('当前暂不开放注册', 'error')
+        return redirect(url_for('auth.login'))
     
     form = RegisterForm()
     if form.validate_on_submit():
