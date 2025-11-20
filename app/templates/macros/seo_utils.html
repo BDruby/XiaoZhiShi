@@ -5,7 +5,7 @@
 {{- seo_settings -}}
 {%- else -%}
 {# 返回默认值 #}
-{{- {'site_title': '现代化博客系统', 'site_description': '', 'site_keywords': '', 'site_author': '', 'og_image': '',
+{{- {'site_title': '', 'site_description': '', 'site_keywords': '', 'site_author': '', 'og_image': '',
 'twitter_handle': ''} -}}
 {%- endif -%}
 {% endmacro %}
@@ -29,8 +29,14 @@
 {% set keywords = category.seo_keywords or '' %}
 {% set canonical_url = url_for('main.category_posts', slug=category.slug, _external=True) %}
 
-{{- {'title': title|string, 'description': description|string, 'keywords': keywords|string, 'canonical_url':
-canonical_url} -}}
+{% set ns = namespace() %}
+{% set ns.title = title|string %}
+{% set ns.description = description|string %}
+{% set ns.keywords = keywords|string %}
+{% set ns.canonical_url = canonical_url %}
+{% set ns.data = {'title': ns.title, 'description': ns.description, 'keywords': ns.keywords, 'canonical_url': ns.canonical_url} %}
+
+{{ ns.data }}
 {% endmacro %}
 
 {% macro get_search_seo_data(query) %}

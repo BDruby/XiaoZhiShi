@@ -66,6 +66,13 @@ def category_posts(slug):
     posts = Post.query.filter_by(category=category, status='published').order_by(Post.created_at.desc()).all()
     return render_template('main/category.html', category=category, posts=posts)
 
+@bp.route('/tag/<slug>')
+def tag_posts(slug):
+    from app.models import Tag
+    tag = Tag.query.filter_by(slug=slug).first_or_404()
+    posts = Post.query.filter(Post.tags.contains(tag), Post.status == 'published').order_by(Post.created_at.desc()).all()
+    return render_template('main/tag.html', tag=tag, posts=posts)
+
 @bp.route('/dashboard')
 @login_required
 def dashboard():
@@ -447,7 +454,13 @@ Sitemap: """ + url_for('main.sitemap', _external=True)
     
 
     response = make_response(robots_content)
-
     response.headers['Content-Type'] = 'text/plain'
-
     return response
+
+
+# 注入导航数据到模板
+@bp.context_processor
+def inject_navigations():
+    from app.models import Navigation
+    active_navigations = Navigation.query.filter_by(is_active=True).order_by(Navigation.position).all()
+    return dict(active_navigations=active_navigations)

@@ -3,9 +3,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 from flask_login import login_required, current_user
-from app.models import db, User, Post, Category, Tag
-from app.auth.forms import RegisterForm
-from app.admin.forms import AdminEditUserForm
+from app.models import db, User, Post, Category, Tag, Navigation
+from app.auth.forms import RegisterForm
+from app.admin.forms import AdminEditUserForm, NavigationForm
 from sqlalchemy import func
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -404,10 +404,59 @@ def change_user_password(id):
     user = User.query.get_or_404(id)
     form = ChangePasswordForm()
     
-    if form.validate_on_submit():
-        user.set_password(form.password.data)
-        db.session.commit()
-        flash('用户密码更新成功', 'success')
-        return redirect(url_for('admin.users'))
-    
-    return render_template('admin/users/change_password.html', form=form, user=user)
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('用户密码更新成功', 'success')
+        return redirect(url_for('admin.users'))
+    
+    return render_template('admin/users/change_password.html', form=form, user=user)
+
+
+# 导航管理
+@bp.route('/navigations')
+def navigations():
+    navigations = Navigation.query.order_by(Navigation.position.asc()).all()
+    return render_template('admin/navigations/index.html', navigations=navigations)
+
+@bp.route('/navigations/create', methods=['GET', 'POST'])
+def create_navigation():
+    form = NavigationForm()
+    if form.validate_on_submit():
+        navigation = Navigation(
+            name=form.name.data,
+            title=form.title.data,
+            url=form.url.data,
+            target=form.target.data,
+            position=form.position.data,
+            is_active=form.is_active.data
+        )
+        db.session.add(navigation)
+        db.session.commit()
+        flash('导航创建成功', 'success')
+        return redirect(url_for('admin.navigations'))
+    return render_template('admin/navigations/create.html', form=form)
+
+@bp.route('/navigations/<int:id>/edit', methods=['GET', 'POST'])
+def edit_navigation(id):
+    navigation = Navigation.query.get_or_404(id)
+    form = NavigationForm(obj=navigation)
+    if form.validate_on_submit():
+        navigation.name = form.name.data
+        navigation.title = form.title.data
+        navigation.url = form.url.data
+        navigation.target = form.target.data
+        navigation.position = form.position.data
+        navigation.is_active = form.is_active.data
+        db.session.commit()
+        flash('导航更新成功', 'success')
+        return redirect(url_for('admin.navigations'))
+    return render_template('admin/navigations/edit.html', form=form, navigation=navigation)
+
+@bp.route('/navigations/<int:id>/delete', methods=['POST'])
+def delete_navigation(id):
+    navigation = Navigation.query.get_or_404(id)
+    db.session.delete(navigation)
+    db.session.commit()
+    flash('导航删除成功', 'success')
+    return redirect(url_for('admin.navigations'))

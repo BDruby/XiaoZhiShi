@@ -3,12 +3,17 @@
 {% from 'macros/seo_utils.html' import get_category_seo_data %}
 
 {% block meta_tags %}
-{% set seo_data = get_category_seo_data(category) %}
+{% from 'macros/seo.html' import render_meta_tags %}
+{% set title = category.seo_title or category.name %}
+{% set description = category.seo_description or (category.description[:160] if category.description else '') %}
+{% set keywords = category.seo_keywords or '' %}
+{% set canonical_url = url_for('main.category_posts', slug=category.slug, _external=True) %}
+
 {{ render_meta_tags(
-title=seo_data.title,
-description=seo_data.description,
-keywords=seo_data.keywords,
-canonical_url=seo_data.canonical_url
+title=title,
+description=description,
+keywords=keywords,
+canonical_url=canonical_url
 ) }}
 {% endblock %}
 

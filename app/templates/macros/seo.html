@@ -1,14 +1,14 @@
 {% macro render_meta_tags(title='', description='', keywords='', og_image='', og_type='website', canonical_url='') %}
     {# 在宏内部访问seo_settings #}
     {% if seo_settings %}
-        {% set site_title = seo_settings.site_title or '现代化博客系统' %}
+        {% set site_title = seo_settings.site_title or '' %}
         {% set site_description = seo_settings.site_description or '' %}
         {% set site_keywords = seo_settings.site_keywords or '' %}
         {% set site_author = seo_settings.site_author or '' %}
         {% set og_image_default = seo_settings.og_image or '' %}
         {% set twitter_handle = seo_settings.twitter_handle or '' %}
     {% else %}
-        {% set site_title = '现代化博客系统' %}
+        {% set site_title = '小芝士' %}
         {% set site_description = '' %}
         {% set site_keywords = '' %}
         {% set site_author = '' %}

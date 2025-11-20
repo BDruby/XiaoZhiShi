@@ -167,4 +167,18 @@ class SeoSetting(db.Model):
     sitemap_lastmod = db.Column(db.DateTime, nullable=True)  # sitemap最后修改时间
     robots_txt_lastmod = db.Column(db.DateTime, nullable=True)  # robots.txt最后修改时间
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class Navigation(db.Model):
+    __tablename__ = 'navigations'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)  # 导航名称，如"首页", "关于我们"等
+    title = db.Column(db.String(100), nullable=False)  # 显示标题
+    url = db.Column(db.String(500), nullable=False)  # URL地址
+    target = db.Column(db.String(20), default='_self')  # 打开方式: _self, _blank 等
+    position = db.Column(db.Integer, default=0)  # 排序位置
+    is_active = db.Column(db.Boolean, default=True)  # 是否激活
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
