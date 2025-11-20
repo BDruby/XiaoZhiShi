@@ -532,8 +532,7 @@ docker-compose logs -f web
 
 - 项目地址: [https://github.com/yourusername/XiaoZhiShi](https://github.com/yourusername/XiaoZhiShi)
 - 问题反馈: [Issues](https://github.com/yourusername/XiaoZhiShi/issues)
-- 邮箱: your-email@example.com
-
+- 邮箱: zerwill@outlook.com
 ## 致谢
 
 - [Flask](https://flask.palletsprojects.com/)
