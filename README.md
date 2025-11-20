@@ -1,4 +1,4 @@
-# XiaoZhiShi (小芝士) - 现代化博客系统
+# XiaoZhiShi (小芝士)英文名：CheesePress - 现代化博客系统
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Flask](https://img.shields.io/badge/Flask-2.3.2-green)
