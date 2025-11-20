@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user, login_required, current_user
-from app.models import db, User, Setting
-from app.auth.forms import LoginForm, RegisterForm
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_user, logout_user, login_required, current_user
+from app.models import db, User, Setting
+from app.auth.forms import LoginForm, RegisterForm, ChangePasswordForm
 
 bp = Blueprint('auth', __name__)
 
@@ -61,8 +61,24 @@ def register():
     
     return render_template('auth/register.html', form=form)
 
-@bp.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('main.index'))
+@bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('main.index'))
+
+@bp.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if not current_user.check_password(form.old_password.data):
+            flash('当前密码错误', 'error')
+            return render_template('auth/change_password.html', form=form)
+        
+        current_user.set_password(form.new_password.data)
+        db.session.commit()
+        flash('密码修改成功', 'success')
+        return redirect(url_for('main.index'))
+    
+    return render_template('auth/change_password.html', form=form)

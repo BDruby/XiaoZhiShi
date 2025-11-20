@@ -85,13 +85,15 @@
                                     {{ current_user.username[0].upper() }}
                                 </div>
                             </button>
-                            <!-- Dropdown (Simple hover implementation for now, can be enhanced with JS) -->
-                            <div
-                                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2">
-                                <a href="{{ url_for('main.dashboard') }}"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">控制台</a>
-                                <a href="{{ url_for('auth.logout') }}"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">退出</a>
+                            <!-- Dropdown (Simple hover implementation for now, can be enhanced with JS) -->
+                            <div
+                                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2">
+                                <a href="{{ url_for('main.dashboard') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">控制台</a>
+                                <a href="{{ url_for('auth.change_password') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">修改密码</a>
+                                <a href="{{ url_for('auth.logout') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">退出</a>
                             </div>
                         </div>
                         {% else %}

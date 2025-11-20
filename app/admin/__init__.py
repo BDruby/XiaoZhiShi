@@ -83,6 +83,7 @@ def create_user():
         return redirect(url_for('admin.users'))
     
     return render_template('admin/users/create.html', form=form)
+
 @bp.route('/users/<int:id>/edit', methods=['GET', 'POST'])
 def edit_user(id):
     user = User.query.get_or_404(id)
@@ -155,7 +156,8 @@ def create_post():
             if not title or not slug or not content:
                 flash('标题、URL别名和内容是必填项', 'error')
                 categories = Category.query.all()
-                return render_template('admin/posts/create.html', categories=categories)
+                all_tags = Tag.query.all()
+                return render_template('admin/posts/create.html', categories=categories, all_tags=all_tags)
             
             post = Post(
                 title=title,
@@ -163,6 +165,7 @@ def create_post():
                 content=content,
                 excerpt=request.form.get('excerpt', ''),
                 status=request.form.get('status', 'draft'),
+                featured_image=request.form.get('featured_image', ''),
                 user_id=current_user.id,
                 # SEO字段
                 seo_title=request.form.get('seo_title', ''),
@@ -206,6 +209,8 @@ def edit_post(id):
             post.content = request.form['content']
             post.excerpt = request.form.get('excerpt', '')
             post.status = request.form.get('status', post.status)
+            post.featured_image = request.form.get('featured_image', '')
+            
             # SEO字段
             post.seo_title = request.form.get('seo_title', '')
             post.seo_description = request.form.get('seo_description', '')
